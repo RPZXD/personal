@@ -85,16 +85,16 @@ $html .= '<div style="position:absolute;top:230px;left:80px;width: 650px; height
             <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;">'
             .'ชื่อ : '. $sb . $teacherData['Teach_name']
             .'<br>ตำแหน่ง : '. $sb . $position . $sb . $sb . 'วิทยฐานะ : ' .$sb . $academic
-            .'<br>กลุ่มสาระ : '. $sb . $teacherData['Teach_major']
+            .'<br>กลุ่มสาระ : '. $sb . $teacherData['Teach_major'] = str_replace('คอมพิวเตอร์', 'วิทยาศาสตร์และเทคโนโลยี', $teacherData['Teach_major'])
             .'<br>ชื่อเรื่องการอบรม/สัมมนา : '. $sb . $trainingDetails['topic']
             .'<br>วันที่ : '. $sb . Utils::convertToThaiDatePlus($trainingDetails['dstart']).' - '.Utils::convertToThaiDatePlus($trainingDetails['dstart'])
             .'<br>ภาคเรียนที่ : '. $sb . $trainingDetails['term'].'/'. $trainingDetails['year']
-            .'<br>สถานที่จัดอบรม/สัมมนา : '. $sb . $trainingDetails['palce']
+            .'<br>สถานที่จัดอบรม/สัมมนา : '. $sb . $trainingDetails['place']
             .'<br>หน่วยงานที่จัดอบรม/สัมมนา : '. $sb . $trainingDetails['supports']
             .'<br>จำนวนชั่วโมงในการอบรม/สัมมนา : '. $sb . $trainingDetails['hours'] . $sb . 'ชั่วโมง' . $sb . $trainingDetails['mn'] . $sb . 'นาที'
             .'<br>จำนวนวันในการอบรม/สัมมนา : '. $sb . $trainingDetails['numday']
             .'<br>ประเภทการอบรม/สัมมนา : '. $sb . $str_type[$trainingDetails['types']]
-            .'<br>งบประมาณที่ใช้ : '. $sb . $trainingDetails['budget'] . $sb . 'บาท'
+            .'<br>งบประมาณที่ใช้ : '. $sb . number_format($trainingDetails['budget'], 2) . $sb . 'บาท'
             .'<br>สรุปความรู้ที่ได้รับ : '. $sb . $trainingDetails['know'] 
             .'<br>วิธีการ/แนวทาง ขยายผลให้ครู/บุคลากรในกลุ่มสาระฯ/ครูในโรงเรียน : '. $sb . $trainingDetails['way'] 
             .'<br>ข้อเสนอแนะเพิ่มเติม : '. $sb . $trainingDetails['suggest'] 
