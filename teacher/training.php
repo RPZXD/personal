@@ -136,7 +136,7 @@ require_once('header.php');
                             <th class="text-center text-light bg-dark">จำนวนชั่วโมง</th>
                             <th class="text-center text-light bg-dark">ภาคเรียนที่</th>
                             <th class="text-center text-light bg-dark">เกียรติบัตร/หลักฐาน</th>
-                            <th style="width: 13%" class="text-center text-light bg-dark">จัดการ</th>
+                            <th style="width: 20%" class="text-center text-light bg-dark">จัดการ</th>
                             <!-- Add more table column headers as needed -->
                         </tr>
                         </thead>       
@@ -518,9 +518,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     `${training.term}/${training.year}`,
                     `<img src="<?= $setting->getImgTraining()?>${training.sdoc}" alt="Certificate" style="height: 150px; width: auto;">`,
                     `
-                    <button class="btn btn-primary btn-view" data-id="${training.semid}">ดู</button>
-                    <button class="btn btn-warning my-2 mx-2 btn-edit" data-id="${training.semid}">แก้ไข</button>
-                    <button class="btn btn-danger btn-del" data-id="${training.semid}">ลบ</button>
+                    <button class="btn btn-info my-1 mx-1 btn-print" data-id="${training.semid}">พิมพ์</button>
+                    <button class="btn btn-primary my-1 mx-1 btn-view" data-id="${training.semid}">ดู</button>
+                    <button class="btn btn-warning my-1 mx-1 btn-edit" data-id="${training.semid}">แก้ไข</button>
+                    <button class="btn btn-danger my-1 mx-1 btn-del" data-id="${training.semid}">ลบ</button>
                     `
                 ]).draw();
             });
@@ -541,6 +542,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     viewTrainingDetails(id);
                 });
             });
+
+            document.querySelectorAll('.btn-print').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    window.open(`print_training.php?id=${id}`, '_blank');
+                });
+            });
+
 
             document.querySelectorAll('.btn-edit').forEach(button => {
                 button.addEventListener('click', function() {
