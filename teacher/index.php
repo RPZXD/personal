@@ -46,6 +46,7 @@ $person = new Person($dbPerson);
 // Fetch distinct years from table_seminar
 $years = $person->getDistinctYears();
 
+
 require_once('header.php');
 
 
