@@ -51,6 +51,7 @@ echo '
     </a>
     <ul class="nav nav-treeview">
         ' . createNavSubMenu('training.php', 'fas fa-user', 'รายบุคคล') . '
+        ' . createNavSubMenu('training_month.php', 'fas fa-calendar-alt', 'รายเดือน') . '
         ' . createNavSubMenu('training_summary.php', 'fas fa-chart-bar', 'สรุป') . '
     </ul>
 </li>';
