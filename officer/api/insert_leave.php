@@ -11,7 +11,7 @@ $person = new Person($db);
 
 // Get data from POST request
 $data = [
-    'tid' => isset($_POST['teacher']) ? $_POST['teacher'] : '',
+    'tid' => isset($_POST['teacher']) ? $_POST['teacher'] : '', // Updated to fetch Teach_id from teacher field
     'status' => isset($_POST['status']) ? $_POST['status'] : '',
     'date_start' => isset($_POST['date_start']) ? $_POST['date_start'] : '',
     'date_end' => isset($_POST['date_end']) ? $_POST['date_end'] : '',

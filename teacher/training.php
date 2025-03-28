@@ -271,11 +271,11 @@ require_once('header.php');
         </div>
 
           <div class="form-group">
-            <label for="addSupports">หน่วยงานที่จัด:</label>
+            <label for="addSupports">หน่วยงานที่จัด:<span class="text-danger text-bold">** กรอกชื่อหน่วยงานที่จัดอบรม/สัมมนา **</span></label>
             <input type="text" class="form-control text-center" id="addSupports" name="supports" required>
           </div>
           <div class="form-group">
-            <label for="addPlace">สถานที่:</label>
+            <label for="addPlace">สถานที่:<span class="text-danger text-bold">** กรอกชื่อสถานที่ที่จัดอบรม/สัมมนา กรณี on-site หากเป็นการอบรม/สัมมนา online ให้กรอก "Online" **</span></label>
             <input type="text" class="form-control text-center" id="addPlace" name="place" required>
           </div>
           <div class="form-group">
@@ -328,6 +328,9 @@ $(document).ready(function() {
   window.printPage = function() {
     let elementsToHide = $('#term_selector, #year_selector, #printButton, #filter, #reset, #addTraining, #footer, .dataTables_length, .dataTables_filter, .dataTables_paginate, .dataTables_info');
 
+    // Hide the export to Excel button
+    $('#record_table_wrapper .dt-buttons').hide(); // Hides the export buttons
+
     // Hide the elements you want to exclude from the print
     elementsToHide.hide();
     $('thead').css('display', 'table-header-group'); // Ensure header shows
@@ -336,6 +339,7 @@ $(document).ready(function() {
     $('table tr').each(function() {
         $(this).find('td:last-child, th:last-child').hide();
     });
+    
 
     setTimeout(() => {
         window.print();
@@ -345,6 +349,7 @@ $(document).ready(function() {
         $('table tr').each(function() {
             $(this).find('td:last-child, th:last-child').show();
         });
+        $('#record_table_wrapper .dt-buttons').show();
     }, 100);
 };
 
@@ -516,7 +521,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     convertToThaiDate(training.dstart),
                     `${training.hours} ชั่วโมง ${training.mn} นาที`,
                     `${training.term}/${training.year}`,
-                    `<img src="<?= $setting->getImgTraining()?>${training.sdoc}" alt="Certificate" style="height: 150px; width: auto;">`,
+                    `<a href="<?= $setting->getImgTraining()?>${training.sdoc}" target="_blank">
+                        <img src="<?= $setting->getImgTraining()?>${training.sdoc}" alt="Certificate" style="height: 150px; width: auto;">
+                    </a>
+                    `,
                     `
                     <button class="btn btn-info my-1 mx-1 btn-print" data-id="${training.semid}">พิมพ์</button>
                     <button class="btn btn-primary my-1 mx-1 btn-view" data-id="${training.semid}">ดู</button>
@@ -588,6 +596,23 @@ document.addEventListener('DOMContentLoaded', function() {
         "responsive": true,
         "scrollX": true,
         "scrollCollapse": true,
+        "buttons": [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<span class="btn btn-success">Export to Excel</span>',
+                        className: 'btn btn-success',
+                        exportOptions: {
+                            columns: ':not(:last-child)', // ไม่รวมคอลัมน์สุดท้าย
+                            modifier: {
+                                selected: null
+                            },
+                            rows: {
+                                search: 'applied',
+                                order: 'applied'
+                            }
+                        }
+                    }
+                ],
         "language": {
             "lengthMenu": "แสดง _MENU_ รายการต่อหน้า",
             "zeroRecords": "ไม่พบข้อมูล",

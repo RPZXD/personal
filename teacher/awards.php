@@ -80,7 +80,7 @@ require_once('header.php');
                         
                         <h6 class="font-bold bt-2">รายงานรางวัล<br>
                         ของ     <?= $teacher_name?><br>
-                        ภาคเรียนที่ <span id="selected_term">-</span> ปีการศึกษา <span id="selected_year">-</span><br>
+                        <span id="selected_term">-</span> ปีการศึกษา <span id="selected_year">-</span><br>
                         </h6>
                                 <button class="btn btn-success text-left mb-3 mt-2" id="printButton" onclick="printPage()"> <i class="fa fa-print" aria-hidden="true"></i> พิมพ์รายงาน  <i class="fa fa-print" aria-hidden="true"></i></button>
                                 
@@ -340,11 +340,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update selected term and year
         const selectedTermElement = document.getElementById('selected_term');
         const selectedYearElement = document.getElementById('selected_year');
-        if (selectedTermElement) {
-            selectedTermElement.innerText = term || '-';
+        if (term == 1) {
+            selectedTermElement.innerText = 'ภาคเรียนที่ 1' ;
+        } else if (term == 2) {
+            selectedTermElement.innerText = 'ภาคเรียนที่ 2' ;
+        } else {
+            selectedTermElement.innerText =  '';
         }
         if (selectedYearElement) {
-            selectedYearElement.innerText = year || '-';
+            selectedYearElement.innerText = year || '';
         }
 
         $.ajax({
@@ -412,7 +416,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     getAwardLevelText(award.level),
                     `${award.term}/${award.year}`,
                     award.department,
-                    `<img src="<?= $setting->getImgAwards()?>${award.certificate}" alt="Certificate" class="h-36 w-auto">`,
+                    `<a href="<?= $setting->getImgAwards()?>${award.certificate}"target="_blank">
+                    <img src="<?= $setting->getImgAwards()?>${award.certificate}" alt="Certificate" class="h-36 w-auto">
+                    </a>`,
                     `
                     <button class="btn btn-primary btn-view" data-id="${award.awid}">ดู</button>
                     <button class="btn btn-warning my-2 mx-2 btn-edit" data-id="${award.awid}">แก้ไข</button>
@@ -528,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="form-group">
                             <label for="editCertificate">เอกสารประกอบ:</label>
                             <input type="file" class="form-control" id="editCertificate" name="certificate">
-                            <img src="<?= $setting->getImgAwards()?>${data.details.certificate}" alt="Certificate" style="height: 150px; width: auto; margin-top: 10px;">
+                            <a href="<?= $setting->getImgAwards()?>${data.details.certificate}"target="_blank"><img src="<?= $setting->getImgAwards()?>${data.details.certificate}" alt="Certificate" style="height: 150px; width: auto; margin-top: 10px;"></a>
                         </div>
                         <input type="hidden" id="editTid" name="tid" value="${data.details.tid}">
                         <input type="hidden" id="editId" name="awardid" value="${data.details.awardid}">

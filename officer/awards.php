@@ -124,7 +124,7 @@ require_once('header.php');
                             <label class="input-group-text" for="select_term">ภาคเรียนที่:</label>
                           </div>
                           <select name="select_term" id="select_term" class="form-control text-center">
-                            <option value="">เลือกภาคเรียน</option>
+                            <option value="">ทั้งสองภาคเรียน</option>
                             <option value="1">ภาคเรียนที่ 1</option>
                             <option value="2">ภาคเรียนที่ 2</option>
                           </select>
@@ -190,6 +190,7 @@ $(document).ready(function() {
   window.printPage = function () {
       let elementsToHide = $('#printButton,#department_selector,#teacher_selector, #term_selector, #year_selector, #filter, #reset, #footer, .dataTables_length, .dataTables_filter, .dataTables_paginate, .dataTables_info');
       let lastColumn = $('#record_table th:last-child, #record_table td:last-child');
+      $('#record_table_wrapper .dt-buttons').hide(); // Hides the export buttons
 
       elementsToHide.hide();
       lastColumn.hide(); // Hide the last column
@@ -199,6 +200,7 @@ $(document).ready(function() {
           window.print();
           elementsToHide.show();
           lastColumn.show(); // Show the last column after printing
+          $('#record_table_wrapper .dt-buttons').show();
       }, 100);
   };
 
@@ -269,15 +271,28 @@ $(document).ready(function() {
         year: year
       },
       success: function(data) {
-        if (data.success) {
-          populateAwardTable(data.data);
-          $('#selected_teacher').text($('#select_teacher option:selected').text());
-          $('#selected_department').text($('#select_department option:selected').text());
-          $('#selected_term').text($('#select_term option:selected').text());
-          $('#selected_year').text($('#select_year option:selected').val());
-        } else {
-          Swal.fire('ข้อผิดพลาด', data.message, 'error');
-        }
+          if (data.success) {
+              populateAwardTable(data.data);
+              
+              // อัปเดตชื่อของ teacher
+              $('#selected_teacher').text($('#select_teacher option:selected').text());
+              
+              // อัปเดตชื่อของ department
+              $('#selected_department').text($('#select_department option:selected').text());
+              
+              // อัปเดตข้อความสำหรับ term (ตรวจสอบว่าไม่ได้เลือก "ทั้งสองภาคเรียน")
+              var selectedTerm = $('#select_term option:selected').val();
+              if (selectedTerm === "") {
+                  $('#selected_term').text(''); // หากเลือก "ทั้งสองภาคเรียน" จะไม่แสดงข้อความ
+              } else {
+                  $('#selected_term').text('ภาคเรียนที่ ' + selectedTerm);
+              }
+              
+              // อัปเดตข้อความปีการศึกษา
+              $('#selected_year').text($('#select_year option:selected').val());
+          } else {
+              Swal.fire('ข้อผิดพลาด', data.message, 'error');
+          }
       },
       error: function(error) {
         Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการดึงข้อมูล', 'error');
@@ -315,7 +330,9 @@ $(document).ready(function() {
           getAwardLevelText(award.level),
           `${award.term}/${award.year}`,
           award.department,
-          `<img src="https://person.phichai.ac.th/teacher/file_award/${award.certificate}" alt="Certificate" class="h-36 w-auto">`,
+          `<a href="../teacher/uploads/file_award/${award.certificate}"target="_blank">
+              <img src="../teacher/uploads/file_award/${award.certificate}" alt="Certificate" class="h-36 w-auto">
+          </a>`,
           `<button class="btn-sm btn-primary ml-2 mt-2 edit-award" data-id="${award.awid}">แก้ไข</button>`
         ]).draw();
       });
@@ -356,6 +373,23 @@ $(document).ready(function() {
       "responsive": true,
       "scrollX": true,
       "scrollCollapse": true,
+      "buttons": [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<span class="btn btn-success">Export to Excel</span>',
+                        className: 'btn btn-success',
+                        exportOptions: {
+                            columns: ':not(:last-child)', // ไม่รวมคอลัมน์สุดท้าย
+                            modifier: {
+                                selected: null
+                            },
+                            rows: {
+                                search: 'applied',
+                                order: 'applied'
+                            }
+                        }
+                    }
+                ],
       "language": {
         "lengthMenu": "แสดง _MENU_ รายการต่อหน้า",
         "zeroRecords": "ไม่พบข้อมูล",

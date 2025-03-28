@@ -96,18 +96,18 @@ function getLeaveStatusText($status, $other_leave_type = '') {
 function PositionTrue($status) {
     switch ($status) {
         case '1':
-            return '<div style="position:absolute;top:255px;left:145px;width: 570px; height: 90px; text-align: left;">
+            return '<div style="position:absolute;top:255px;left:106px;width: 570px; height: 90px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;font-weight: bold;">/</div></div>';
         case '2':
-            return '<div style="position:absolute;top:280px;left:145px;width: 570px; height: 90px; text-align: left;">
+            return '<div style="position:absolute;top:280px;left:106px;width: 570px; height: 90px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;font-weight: bold;">/</div></div>';
         case '3':
             return '';
         case '4':
-            return '<div style="position:absolute;top:305px;left:145px;width: 570px; height: 90px; text-align: left;">
+            return '<div style="position:absolute;top:305px;left:106px;width: 570px; height: 90px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;font-weight: bold;">/</div></div>';
         case '9':
-            return '<div style="position:absolute;top:330px;left:145px;width: 570px; height: 90px; text-align: left;">
+            return '<div style="position:absolute;top:330px;left:106px;width: 570px; height: 90px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;font-weight: bold;">/</div></div>';
         default:
             return '';
@@ -171,41 +171,49 @@ if ($position == 'ครู') {
 }
 $html .= '............</div></div>';
 
-$html .= '<div style="position:absolute;top:225px;left:50px;width: 570px; height: 90px; text-align: left;">
+$html .= '<div style="position:absolute;top:225px;left:50px;width: 570px; height: 35px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;">สังกัด&nbsp;&nbsp; สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาพิษณุโลก&nbsp;&nbsp;อุตรดิตถ์&nbsp;&nbsp;กระทรวงศึกษาธิการ</div></div>';
 
-$html .= '<div style="position:absolute;top:290px;left:50px;width: 570px; height: 90px; text-align: left;">
+$html .= '<div style="position:absolute;top:290px;left:50px;width: 570px; height: 35px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;">ขอลา</div></div>';
 
-$html .= '<div style="position:absolute;top:255px;left:140px;width: 570px; height: 90px; text-align: left;">
-<div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;"><input type="checkbox">&nbsp;&nbsp;ป่วย&nbsp;&nbsp;เนื่องจาก....';
+$html .= '<div style="position:absolute;top:255px;left:100px;width: 570px; height: 35px; text-align: left;">
+<div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;"><input type="checkbox">&nbsp;&nbsp;ป่วย&nbsp;&nbsp;เนื่องจาก</div></div>';
+
+$html .= '<div style="position:absolute;top:262px;left:230px;width: 800px; height: 35px; text-align: left;">
+<div style="display: flex; justify-content: left; align-items: left;">';
 if ($status == '1') {
-    $html .= '.....' . $detail . '....';
+    $html .= $shortDetail = mb_strlen($detail, 'UTF-8') > 100 ? mb_substr($detail, 0, 100, 'UTF-8') . "..." : $detail;
 } else {
     $html .= '..........................................................................................................';
 }
 $html .= '...</div></div>';
 
-$html .= '<div style="position:absolute;top:280px;left:140px;width: 570px; height: 90px; text-align: left;">
-<div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;"><input type="checkbox">&nbsp;&nbsp;กิจส่วนตัว&nbsp;&nbsp;เนื่องจาก....';
+$html .= '<div style="position:absolute;top:280px;left:100px;width: 570px; height: 35px; text-align: left;">
+<div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;"><input type="checkbox">&nbsp;&nbsp;กิจส่วนตัว&nbsp;&nbsp;เนื่องจาก</div></div>';
+
+$html .= '<div style="position:absolute;top:287px;left:260px;width: 800px; height: 35px; text-align: left;">
+<div style="display: flex; justify-content: left; align-items: left;">';
 if ($status == '2') {
-    $html .= '.....' . $detail . '....';
+    $html .= $shortDetail = mb_strlen($detail, 'UTF-8') > 100 ? mb_substr($detail, 0, 100, 'UTF-8') . "..." : $detail;
 } else {
     $html .= '.................................................................................................';
 }
 $html .= '...</div></div>';
 
-$html .= '<div style="position:absolute;top:305px;left:140px;width: 570px; height: 90px; text-align: left;">
+$html .= '<div style="position:absolute;top:305px;left:100px;width: 570px; height: 35px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;"><input type="checkbox">&nbsp;&nbsp;คลอดบุตร</div></div>';
 
-$html .= '<div style="position:absolute;top:330px;left:140px;width: 570px; height: 90px; text-align: left;">
-<div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;"><input type="checkbox">&nbsp;&nbsp;อื่น ๆ&nbsp;&nbsp;เนื่องจาก....';
+$html .= '<div style="position:absolute;top:330px;left:100px;width: 570px; height: 35px; text-align: left;">
+<div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;"><input type="checkbox">&nbsp;&nbsp;อื่น ๆ&nbsp;&nbsp;เนื่องจาก</div></div>';
+$html .= '<div style="position:absolute;top:337px;left:240px;width: 800px; height: 35px; text-align: left;">
+<div style="display: flex; justify-content: left; align-items: left;">';
 if ($status == '9') {
-    $html .= $other_leave_type.'....' . $detail;
+    $html .= $other_leave_type.'....' . $shortDetail = mb_strlen($detail, 'UTF-8') > 90 ? mb_substr($detail, 0, 90, 'UTF-8') . "..." : $detail;
 } else {
     $html .= '........................................................................................................';
 }
-$html .= '...</div></div>';
+$html .= '</div></div>';
 
 $html .= '<div style="position:absolute;top:360px;left:50px;width: 650px; height: 90px; text-align: left;">
 <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;">ตั้งแต่วันที่.......' . $date_start_thai . '.......ถึงวันที่.......' . $date_end_thai . '........มีกำหนด.......' . $total_leave . '.......วัน</div></div>';

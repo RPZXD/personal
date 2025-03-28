@@ -87,19 +87,19 @@ require_once('header.php');
                         </h6>
                                 <button class="btn btn-success text-left mb-3 mt-2" id="printButton" onclick="printPage()"> <i class="fa fa-print" aria-hidden="true"></i> พิมพ์รายงาน  <i class="fa fa-print" aria-hidden="true"></i></button>
                                 
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons" id="dateRangeSelector">
-                      <label class="btn btn-outline-info">
-                        <input type="radio" name="dateRange" id="range1" autocomplete="off">ครึ่งปีแรก(1 เม.ย. - 30 ก.ย.)
-                      </label>
-                      <label class="btn btn-outline-warning">
-                        <input type="radio" name="dateRange" id="range2" autocomplete="off">ครึ่งปีหลัง(1 ต.ค. - 31 มี.ค.)
-                      </label>
-                      <label class="btn btn-outline-primary">
-                        <input type="radio" name="dateRange" id="customRange" autocomplete="off"> กำหนดเอง
-                      </label>
-                    </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons" id="dateRangeSelector">
+                        <label class="btn btn-outline-info">
+                          <input type="radio" name="dateRange" id="range1" autocomplete="off">ครึ่งปีแรก(1 ต.ค. - 31 มี.ค.)
+                        </label>
+                        <label class="btn btn-outline-warning">
+                          <input type="radio" name="dateRange" id="range2" autocomplete="off">ครึ่งปีหลัง(1 เม.ย. - 30 ก.ย.)
+                        </label>
+                        <label class="btn btn-outline-primary">
+                          <input type="radio" name="dateRange" id="customRange" autocomplete="off"> กำหนดเอง
+                        </label>
+                      </div>
                     <div class="row">
                       <div class="col-md-3">
                         <div class="input-group mb-3" id="department_selector">
@@ -165,27 +165,27 @@ require_once('header.php');
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลาทั้งหมด</th>
+                                <th colspan="5" class="text-center">รวมวันลาทั้งหมด</th>
                                 <th id="total_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลาป่วย</th>
+                                <th colspan="5" class="text-center">รวมวันลาป่วย</th>
                                 <th id="total_sick_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลากิจ</th>
+                                <th colspan="5" class="text-center">รวมวันลากิจ</th>
                                 <th id="total_personal_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันไปราชการ</th>
+                                <th colspan="5" class="text-center">รวมวันไปราชการ</th>
                                 <th id="total_official_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลาอื่นๆ</th>
+                                <th colspan="5" class="text-center">รวมวันลาอื่นๆ</th>
                                 <th id="total_other_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
@@ -256,10 +256,10 @@ require_once('header.php');
 
 
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
-<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addModalLabel">เพิ่มการแจ้งลา</h5>
+        <h5 class="modal-title" id="addModalLabel">เพิ่มการแจ้งลา <span class="text-danger text-bold">** ข้อมูลจะถูกบันทึกไปเป็นใบลา **</span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -269,18 +269,18 @@ require_once('header.php');
           <div class="form-group">
             <label for="addDepartment">เลือกกลุ่ม:</label>
             <select name="department" id="addDepartment" class="form-control text-center" required>
-              </option>เลือก</option>
-                <?php foreach ($majors as $major): ?>
-                  <option value="<?= $major['Teach_major'] ?>"><?= $major['Teach_major'] ?></option>
-                <?php endforeach; ?>
-                </select>
+              <option value="">เลือกกลุ่ม</option>
+              <?php foreach ($majors as $major): ?>
+                <option value="<?= $major['Teach_major'] ?>"><?= $major['Teach_major'] ?></option>
+              <?php endforeach; ?>
+            </select>
           </div>
           <div class="form-group">
             <label for="addTeacher">เลือกครู:</label>
             <select name="teacher" id="addTeacher" class="form-control text-center" required>
               <option value="">เลือกครู</option>
-
             </select>
+          </div>
           <div class="form-group">
             <label for="addStatus">แจ้งการลา:</label>
             <select name="status" id="addStatus" class="form-control text-center" required>
@@ -305,9 +305,11 @@ require_once('header.php');
             <input type="date" class="form-control text-center" id="addDateEnd" name="date_end" required>
           </div>
           <div class="form-group">
-            <label for="addDetail">เหตุผล:</label>
-            <textarea class="form-control text-center" id="addDetail" name="detail" required></textarea>
+              <label for="addDetail">เหตุผล:<span class="text-danger text-bold">** จำกัด 100 ตัวอักษร โปรดใช้คำให้เหมาะสม **</span></label>
+              <textarea class="form-control text-center" id="addDetail" name="detail" required maxlength="100" oninput="updateCharCount()"></textarea>
+              <small id="charCount">0 / 100</small>
           </div>
+          <input type="hidden" id="addTid" name="tid" value="<?= $teacher_id ?>">
         </form>
       </div>
       <div class="modal-footer">
@@ -347,6 +349,7 @@ $(document).ready(function() {
 
   // Call setupPrintLayout when document is ready
   setupPrintLayout();
+  
 
   $('#addLeave').on('click', function() {
     $('#addModal').modal('show');
@@ -423,7 +426,7 @@ $(document).ready(function() {
     const nextYear = currentYear + 1;
     const prevYear = currentYear - 1;
 
-    if (this.id === 'range2') {
+    if (this.id === 'range1') {
       if (currentDate < new Date(`${currentYear}-04-01`)) {
         $('#select_date_start').val(`${prevYear}-10-01`);
         $('#select_date_end').val(`${currentYear}-03-31`);
@@ -431,13 +434,13 @@ $(document).ready(function() {
         $('#select_date_start').val(`${currentYear}-10-01`);
         $('#select_date_end').val(`${nextYear}-03-31`);
       }
-    } else if (this.id === 'range1') {
+    } else if (this.id === 'range2') {
       if (currentDate < new Date(`${currentYear}-04-01`)) {
-        $('#select_date_start').val(`${prevYear}-04-01`);
-        $('#select_date_end').val(`${prevYear}-09-30`);
-      } else {
         $('#select_date_start').val(`${currentYear}-04-01`);
         $('#select_date_end').val(`${currentYear}-09-30`);
+      } else {
+        $('#select_date_start').val(`${nextYear}-04-01`);
+        $('#select_date_end').val(`${nextYear}-09-30`);
       }
     } else {
       $('#select_date_start').val('');
@@ -508,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('filter').addEventListener('click', fetchLeaveData);
     document.getElementById('reset').addEventListener('click', resetFilters);
 
-
+    
     function fetchLeaveData() {
         const tid = document.getElementById('select_teacher').value;
         const dateStart = document.getElementById('select_date_start').value;
@@ -548,16 +551,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function convertToThaiDate(dateString) {
-        const months = [
-            'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-            'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-        ];
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = months[date.getMonth()];
-        const year = date.getFullYear() + 543; // Convert to Buddhist year
-        return `${day} ${month} ${year}`;
+            const months = [
+                'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+            ];
+            const date = new Date(dateString);
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            const year = date.getFullYear() + 543; // Convert to Buddhist year
+            return `${day} ${month} ${year}`;
+        }
+        function updateCharCount() {
+        const textarea = document.getElementById("addDetail");
+        const charCount = document.getElementById("charCount");
+        const maxLength = 100;
+
+        textarea.addEventListener("input", function () {
+            const currentLength = textarea.value.length;
+
+            // Update the character count display
+            charCount.textContent = `${currentLength} / ${maxLength}`;
+
+            // Change color to red if the limit is reached
+            charCount.style.color = currentLength >= maxLength ? "red" : "black";
+
+            // Trim the input if it exceeds the maximum length
+            if (currentLength > maxLength) {
+                textarea.value = textarea.value.substring(0, maxLength);
+            }
+        });
     }
+
+    // Call the function to ensure it is set up
+    updateCharCount();
 
     function populateLeaveTable(leaves) {
         const table = $('#record_table').DataTable();
@@ -599,8 +625,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let printButton = '';
                 if (['1', '2', '4', '9'].includes(leave.status)) {
-                    printButton = `<a href="print_leave.php?id=${leave.id}" target="_blank" class="btn-sm btn-warning my-2 mx-2">พิมพ์</a>`;
-                    editButton = `<button class="btn-sm btn-primary ml-2 mt-2 edit-leave" data-id="${leave.id}">แก้ไข</button>`; // เพิ่มปุ่มแก้ไข
+                    printButton = `<a href="print_leave.php?id=${leave.id}" target="_blank" class="btn-sm bg-blue-500 text-white ml-2 mt-2">พิมพ์</a>`;
+                    editButton = `<button class="btn-sm bg-yellow-500 text-white ml-2 mt-2 edit-leave" data-id="${leave.id}">แก้ไข</button>`; // เพิ่มปุ่มแก้ไข
+                    delButton = `<button class="btn-sm bg-red-500 text-white ml-2 mt-2 del-leave" data-id="${leave.id}">ลบ</button>`; // เพิ่มปุ่มลบ
                 }
 
                 table.row.add([
@@ -610,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     convertToThaiDate(leave.date_end),
                     totalLeave,
                     leave.detail,
-                    printButton + editButton // รวมปุ่มพิมพ์และแก้ไข
+                    printButton + editButton + delButton // รวมปุ่มพิมพ์และแก้ไข
                 ]).draw();
             });
 
@@ -677,11 +704,11 @@ document.addEventListener('DOMContentLoaded', function() {
               }
           },
           "columnDefs": [
-              { "orderable": false, "targets": [0] }, // ปิดการเรียงลำดับของคอลัมน์แรก
-              { "className": "text-center", "targets": "_all" }, // จัดกึ่งกลางทุกคอลัมน์
-              { "width": "400px", "targets": [5] }, // กำหนดขนาดคอลัมน์ที่ 1,2 ไม่ให้กว้างเกินไป
-              { "targets": "_all", "render": function (data, type, row) {
-                  return '<div class="text-wrap">' + data + '</div>';
+              { "orderable": false, "targets": [0] }, 
+              { "className": "text-center", "targets": "_all" }, 
+              { "width": "300px", "targets": [5] }, // Set width for the "เหตุผล" column (index 5)
+              { "targets": [5], "render": function (data, type, row) { // Target the "เหตุผล" column (index 5)
+                  return '<div class="text-wrap" style="white-space: normal; word-wrap: break-word; max-width: 300px;">' + data + '</div>';
               }}
           ]
       });
@@ -722,6 +749,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    $(document).on('click', '.del-leave', function() {
+        const leaveId = $(this).data('id');
+
+        Swal.fire({
+            title: 'ยืนยันการลบ?',
+            text: "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'ใช่, ลบเลย!',
+            cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'api/del_leave.php',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { id: leaveId },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire('ลบสำเร็จ!', 'ข้อมูลการลาถูกลบเรียบร้อย', 'success');
+                            $(`.del-leave[data-id="${leaveId}"]`).closest('tr').remove(); // ลบแถวจากตาราง (ถ้าอยู่ในตาราง)
+                        } else {
+                            Swal.fire('ข้อผิดพลาด', response.message || 'ไม่สามารถลบข้อมูลได้', 'error');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
+                    }
+                });
+            }
+        });
+    });
+
 
     // Handle save edit button click
     $('#saveEdit').on('click', function() {

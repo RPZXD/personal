@@ -85,10 +85,10 @@ require_once('header.php');
                   <div class="col-md-12">
                     <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons" id="dateRangeSelector">
                       <label class="btn btn-outline-info">
-                        <input type="radio" name="dateRange" id="range1" autocomplete="off">ครึ่งปีแรก(1 เม.ย. - 30 ก.ย.)
+                        <input type="radio" name="dateRange" id="range1" autocomplete="off">ครึ่งปีแรก(1 ต.ค. - 31 มี.ค.)
                       </label>
                       <label class="btn btn-outline-warning">
-                        <input type="radio" name="dateRange" id="range2" autocomplete="off">ครึ่งปีหลัง(1 ต.ค. - 31 มี.ค.)
+                        <input type="radio" name="dateRange" id="range2" autocomplete="off">ครึ่งปีหลัง(1 เม.ย. - 30 ก.ย.)
                       </label>
                       <label class="btn btn-outline-primary">
                         <input type="radio" name="dateRange" id="customRange" autocomplete="off"> กำหนดเอง
@@ -136,27 +136,27 @@ require_once('header.php');
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลาทั้งหมด</th>
+                                <th colspan="5" class="text-center">รวมวันลาทั้งหมด</th>
                                 <th id="total_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลาป่วย</th>
+                                <th colspan="5" class="text-center">รวมวันลาป่วย</th>
                                 <th id="total_sick_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลากิจ</th>
+                                <th colspan="5" class="text-center">รวมวันลากิจ</th>
                                 <th id="total_personal_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันไปราชการ</th>
+                                <th colspan="5" class="text-center">รวมวันไปราชการ</th>
                                 <th id="total_official_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <th colspan="4" class="text-center">รวมวันลาอื่นๆ</th>
+                                <th colspan="5" class="text-center">รวมวันลาอื่นๆ</th>
                                 <th id="total_other_leave_days" class="text-center">-</th>
                                 <th></th>
                             </tr>
@@ -176,13 +176,12 @@ require_once('header.php');
 </div>
 <!-- ./wrapper -->
 
-
 <!-- Add Modal -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addModalLabel">เพิ่มการแจ้งลา</h5>
+        <h5 class="modal-title" id="addModalLabel">เพิ่มการแจ้งลา <span class="text-danger text-bold">** ข้อมูลจะถูกบันทึกไปเป็นใบลา **</span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -213,8 +212,9 @@ require_once('header.php');
             <input type="date" class="form-control text-center" id="addDateEnd" name="date_end" required>
           </div>
           <div class="form-group">
-            <label for="addDetail">เหตุผล:</label>
-            <textarea class="form-control text-center" id="addDetail" name="detail" required></textarea>
+              <label for="addDetail">เหตุผล:<span class="text-danger text-bold">** จำกัด 100 ตัวอักษร โปรดใช้คำให้เหมาะสม **</span></label>
+              <textarea class="form-control text-center" id="addDetail" name="detail" required maxlength="100" oninput="updateCharCount()"></textarea>
+              <small id="charCount">0 / 100</small>
           </div>
           <input type="hidden" id="addTid" name="tid" value="<?= $teacher_id ?>">
         </form>
@@ -228,6 +228,7 @@ require_once('header.php');
 </div>
 
 <script>
+
 $(document).ready(function() {
   // Function to handle printing
   window.printPage = function () {
@@ -332,7 +333,7 @@ $(document).ready(function() {
     const nextYear = currentYear + 1;
     const prevYear = currentYear - 1;
 
-    if (this.id === 'range2') {
+    if (this.id === 'range1') {
       if (currentDate < new Date(`${currentYear}-04-01`)) {
         $('#select_date_start').val(`${prevYear}-10-01`);
         $('#select_date_end').val(`${currentYear}-03-31`);
@@ -340,13 +341,13 @@ $(document).ready(function() {
         $('#select_date_start').val(`${currentYear}-10-01`);
         $('#select_date_end').val(`${nextYear}-03-31`);
       }
-    } else if (this.id === 'range1') {
+    } else if (this.id === 'range2') {
       if (currentDate < new Date(`${currentYear}-04-01`)) {
-        $('#select_date_start').val(`${prevYear}-04-01`);
-        $('#select_date_end').val(`${prevYear}-09-30`);
-      } else {
         $('#select_date_start').val(`${currentYear}-04-01`);
         $('#select_date_end').val(`${currentYear}-09-30`);
+      } else {
+        $('#select_date_start').val(`${nextYear}-04-01`);
+        $('#select_date_end').val(`${nextYear}-09-30`);
       }
     } else {
       $('#select_date_start').val('');
@@ -368,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fetch leave data on page load
     fetchLeaveData();
+    updateCharCount();
 
     function fetchLeaveData() {
         const tid = <?= json_encode($userData['Teach_id']); ?>;
@@ -400,6 +402,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    function updateCharCount() {
+    const textarea = document.getElementById("addDetail");
+    const charCount = document.getElementById("charCount");
+    const maxLength = 100;
+
+    textarea.addEventListener("input", function () {
+        const currentLength = textarea.value.length;
+
+        // Update the character count display
+        charCount.textContent = `${currentLength} / ${maxLength}`;
+
+        // Change color to red if the limit is reached
+        charCount.style.color = currentLength >= maxLength ? "red" : "black";
+
+        // Trim the input if it exceeds the maximum length
+        if (currentLength > maxLength) {
+            textarea.value = textarea.value.substring(0, maxLength);
+        }
+    });
+}
+
+// Call the function to ensure it is set up
+updateCharCount();
 
     function resetFilters() {
         document.getElementById('select_date_start').value = '';
@@ -536,11 +561,11 @@ document.addEventListener('DOMContentLoaded', function() {
               }
           },
           "columnDefs": [
-              { "orderable": false, "targets": [0] }, // ปิดการเรียงลำดับของคอลัมน์แรก
-              { "className": "text-center", "targets": "_all" }, // จัดกึ่งกลางทุกคอลัมน์
-              { "width": "400px", "targets": [5] }, // กำหนดขนาดคอลัมน์ที่ 1,2 ไม่ให้กว้างเกินไป
-              { "targets": "_all", "render": function (data, type, row) {
-                  return '<div class="text-wrap">' + data + '</div>';
+              { "orderable": false, "targets": [0] }, 
+              { "className": "text-center", "targets": "_all" }, 
+              { "width": "300px", "targets": [5] }, // Set width for the "เหตุผล" column (index 5)
+              { "targets": [5], "render": function (data, type, row) { // Target the "เหตุผล" column (index 5)
+                  return '<div class="text-wrap" style="white-space: normal; word-wrap: break-word; max-width: 300px;">' + data + '</div>';
               }}
           ]
       });

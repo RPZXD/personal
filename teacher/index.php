@@ -76,7 +76,7 @@ require_once('header.php');
             <div class="row">
                 <div class="col-md-12">
                     <div class="callout callout-success text-center">
-                        <h4 class="text-green-600">ยินดีต้อนรับคุณครู <?php echo $userData['Teach_name'] ?> เข้าสู่ระบบบริหารทั่วไป | โรงเรียนพิชัย</h4>
+                        <h4 class="text-green-600">ยินดีต้อนรับคุณครู <?php echo $userData['Teach_name'].' ' . $setting->getPageTitle() ?></h4>
                     </div>
                 </div>
             </div>
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 donutChart2.update();
             });
 
-        fetch(`api/fetch_chart_leave.php?tid=<?php echo $teacher_id; ?>&term=${term}&year=${year}`)
+        fetch(`api/fetch_chart_leave.php?tid=<?php echo $teacher_id; ?>`)
             .then(response => response.json())
             .then(data => {
                 donutChart3.data.labels = data.map(item => item.status_name);
