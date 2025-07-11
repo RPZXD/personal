@@ -1,180 +1,205 @@
-<?php 
 
+<?php
 session_start();
+require_once("../config/Database.php");
+require_once("../class/UserLogin.php");
+require_once("../class/Utils.php");
+require_once("../class/Person.php");
 
-include_once("../config/Database.php");
-include_once("../class/UserLogin.php");
-include_once("../class/Utils.php");
-include_once("../class/Person.php");
-
-// Initialize database connection
-$connectDB = new Database_User();
-$db = $connectDB->getConnection();
-
-// Initialize UserLogin class
-$user = new UserLogin($db);
-
-// Fetch terms and pee
-$term = $user->getTerm();
-$pee = $user->getPee();
-
-if (isset($_SESSION['Teacher_login'])) {
-    $userid = $_SESSION['Teacher_login'];
-    $userData = $user->userData($userid);
-} else {
-    $sw2 = new SweetAlert2(
+// Check login and get user data
+if (!isset($_SESSION['Teacher_login'])) {
+    (new SweetAlert2(
         'คุณยังไม่ได้เข้าสู่ระบบ',
         'error',
-        '../login.php' // Redirect URL
-    );
-    $sw2->renderAlert();
+        '../login.php'
+    ))->renderAlert();
     exit;
 }
+
+
+$userId = $_SESSION['Teacher_login'];
+$db = (new Database_User())->getConnection();
+$user = new UserLogin($db);
+$userData = $user->userData($userId);
 
 $teacher_id = $userData['Teach_id'];
 $teacher_name = $userData['Teach_name'];
 $class = $userData['Teach_class'];
 $room = $userData['Teach_room'];
 
-// Initialize database connection for Person
-$connectDBPerson = new Database_Person();
-$dbPerson = $connectDBPerson->getConnection();
+// Get current pee (ปีการศึกษา)
+$pee = $user->getPee();
 
-// Initialize Person class
+// Only create Person DB connection if needed
+$dbPerson = (new Database_Person())->getConnection();
 $person = new Person($dbPerson);
 
 require_once('header.php');
 
 ?>
+
 <body class="hold-transition sidebar-mini layout-fixed light-mode">
 <div class="wrapper">
-
-    <?php require_once('wrapper.php');?>
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-
-  <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0"></h1>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
-    <section class="content">
-      <div class="container-fluid">
-        
-        <div class="row">
-
-        <div class="col-md-12">
-        <button id="addLeave" class="btn btn-lg btn-success my-2"> <i class="fa fa-plus" aria-hidden="true"></i> เพิ่มการแจ้งลา</button>
-          <div class="callout callout-success text-center">
-          <img src="../dist/img/logo-phicha.png" alt="Phichai Logo" id="logoPrint" class="brand-image rounded-full opacity-80 mb-3 w-12 h-12 mx-auto">
-                        
-                        <h6 class="font-bold bt-2">รายงานการลา<br>
-                        ของ     <?= $teacher_name?><br>
-                        <br>
-                        </h6>
-                                <button class="btn btn-success text-left mb-3 mt-2" id="printButton" onclick="printPage()"> <i class="fa fa-print" aria-hidden="true"></i> พิมพ์รายงาน  <i class="fa fa-print" aria-hidden="true"></i></button>
-                                
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons" id="dateRangeSelector">
-                      <label class="btn btn-outline-info">
-                        <input type="radio" name="dateRange" id="range1" autocomplete="off">ครึ่งปีแรก(1 ต.ค. - 31 มี.ค.)
-                      </label>
-                      <label class="btn btn-outline-warning">
-                        <input type="radio" name="dateRange" id="range2" autocomplete="off">ครึ่งปีหลัง(1 เม.ย. - 30 ก.ย.)
-                      </label>
-                      <label class="btn btn-outline-primary">
-                        <input type="radio" name="dateRange" id="customRange" autocomplete="off"> กำหนดเอง
-                      </label>
+    <?php require_once('wrapper.php'); ?>
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0"></h1>
                     </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="input-group mb-3" id="date_start_selector">
-                          <div class="input-group-prepend">
-                            <label class="input-group-text" for="select_date_start">วันที่เริ่มต้น:</label>
-                          </div>
-                          <input type="date" class="form-control text-center" id="select_date_start">
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="input-group mb-3" id="date_end_selector">
-                          <div class="input-group-prepend">
-                            <label class="input-group-text" for="select_date_end">วันที่สิ้นสุด:</label>
-                          </div>
-                          <input type="date" class="form-control text-center" id="select_date_end" >
-                        </div>
-                      </div>
-                    </div>
-                <div>
-                  <button id="filter" class="btn btn-sm btn-outline-info"> <i class="fa fa-search" aria-hidden="true"></i> ค้นหา</button>
-                  <button id="reset" class="btn btn-sm btn-outline-warning"> <i class="fa fa-trash" aria-hidden="true"></i> ล้างค่า</button>
-                </div>
-        <div class="row">
-            <div class="col-md-12 mt-3 mb-3 mx-auto">
-                <div class="table-responsive mx-auto">
-                    <table class="display table-bordered responsive nowrap" id="record_table" style="width:100%;">
-                        <thead class="thead-secondary">
-                        <tr >
-                            <th style="width:5%" class="text-center text-white bg-gray-800">ครั้งที่</th>
-                            <th style="width: 10%;" class="text-center text-white bg-gray-800">แจ้งการลา</th>
-                            <th class="text-center text-white bg-gray-800">วันที่เริ่มต้น</th>
-                            <th class="text-center text-white bg-gray-800">วันที่สิ้นสุด</th>
-                            <th class="text-center text-white bg-gray-800">รวมวันลา</th>
-                            <th class="text-center text-white bg-gray-800">เหตุผล</th>
-                            <th class="text-center text-white bg-gray-800">จัดการ</th>
-                            <!-- Add more table column headers as needed -->
-                        </tr>
-                        </thead>       
-                        <tbody>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลาทั้งหมด</th>
-                                <th id="total_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลาป่วย</th>
-                                <th id="total_sick_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลากิจ</th>
-                                <th id="total_personal_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันไปราชการ</th>
-                                <th id="total_official_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลาอื่นๆ</th>
-                                <th id="total_other_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                        </tfoot>
-                    </table>
                 </div>
             </div>
         </div>
-        <!-- /.row -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button id="addLeave" class="btn btn-lg btn-success my-2">
+                            <i class="fa fa-plus" aria-hidden="true"></i> เพิ่มการแจ้งลา
+                        </button>
+                        <div class="callout callout-success text-center">
+                            <img src="../dist/img/logo-phicha.png" alt="Phichai Logo" id="logoPrint" class="brand-image rounded-full opacity-80 mb-3 w-12 h-12 mx-auto">
+                            <h6 class="font-bold bt-2">รายงานการลา<br>ของ <?= $teacher_name ?><br><br></h6>
+                            <button class="btn btn-success text-left mb-3 mt-2" id="printButton" onclick="printPage()">
+                                <i class="fa fa-print" aria-hidden="true"></i> พิมพ์รายงาน <i class="fa fa-print" aria-hidden="true"></i>
+                            </button>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons" id="dateRangeSelector">
+                                        <label class="btn btn-outline-info">
+                                            <input type="radio" name="dateRange" id="range1" autocomplete="off">ครึ่งปีแรก(1 ต.ค. - 31 มี.ค.)
+                                        </label>
+                                        <label class="btn btn-outline-warning">
+                                            <input type="radio" name="dateRange" id="range2" autocomplete="off">ครึ่งปีหลัง(1 เม.ย. - 30 ก.ย.)
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <input type="radio" name="dateRange" id="customRange" autocomplete="off"> กำหนดเอง
+                                        </label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-3" id="date_start_selector">
+                                                <div class="input-group-prepend">
+                                                    <label class="input-group-text" for="select_date_start">วันที่เริ่มต้น:</label>
+                                                </div>
+                                                <input type="date" class="form-control text-center" id="select_date_start">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-3" id="date_end_selector">
+                                                <div class="input-group-prepend">
+                                                    <label class="input-group-text" for="select_date_end">วันที่สิ้นสุด:</label>
+                                                </div>
+                                                <input type="date" class="form-control text-center" id="select_date_end">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button id="filter" class="btn btn-sm btn-outline-info">
+                                            <i class="fa fa-search" aria-hidden="true"></i> ค้นหา
+                                        </button>
+                                        <button id="reset" class="btn btn-sm btn-outline-warning">
+                                            <i class="fa fa-trash" aria-hidden="true"></i> ล้างค่า
+                                        </button>
+                                    </div>
 
-      </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-    <?php require_once('../footer.php');?>
+
+                                <!-- Tailwind Leave Summary Cards -->
+                                <div class="flex flex-wrap gap-4 mb-6 justify-center mt-4">
+                                  <div class="w-48 bg-blue-600 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                                    <div class="px-4 py-2 font-semibold text-center border-b border-blue-700">รวมวันลาทั้งหมด</div>
+                                    <div class="p-4 text-3xl font-bold text-center animate-pulse" id="card_total_leave_days">-</div>
+                                  </div>
+                                  <div class="w-48 bg-red-500 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                                    <div class="px-4 py-2 font-semibold text-center border-b border-red-600">ลาป่วย</div>
+                                    <div class="p-4 text-3xl font-bold text-center" id="card_total_sick_leave_days">-</div>
+                                  </div>
+                                  <div class="w-48 bg-yellow-400 text-gray-900 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                                    <div class="px-4 py-2 font-semibold text-center border-b border-yellow-500">ลากิจ</div>
+                                    <div class="p-4 text-3xl font-bold text-center" id="card_total_personal_leave_days">-</div>
+                                  </div>
+                                  <div class="w-48 bg-green-500 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                                    <div class="px-4 py-2 font-semibold text-center border-b border-cyan-600">ไปราชการ</div>
+                                    <div class="p-4 text-3xl font-bold text-center" id="card_total_official_leave_days">-</div>
+                                  </div>
+                                  <div class="w-48 bg-gray-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                                    <div class="px-4 py-2 font-semibold text-center border-b border-gray-800">ลาอื่นๆ</div>
+                                    <div class="p-4 text-3xl font-bold text-center" id="card_total_other_leave_days">-</div>
+                                  </div>
+                                </div>
+
+
+                              <!-- Tailwind Leave Regulation Card -->
+                              <div class="w-full mb-6 flex justify-center">
+                                <div class="w-full max-w-2xl bg-green-100 border-l-4 border-green-500 rounded-xl shadow p-6">
+                                  <div class="flex items-center mb-2">
+                                    <svg class="w-6 h-6 text-green-600 mr-2 animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0a9 9 0 0118 0z"/></svg>
+                                    <span class="font-bold text-green-700 text-lg">ระเบียบวันลาตามแนวปฏิบัติ (ข้าราชการครู)</span>
+                                  </div>
+                                    <ul class="list-disc pl-6 text-green-900">
+                                      <li>ลาป่วย: <span class="font-bold">ไม่เกิน 30 วัน/ปี</span></li>
+                                      <li>ลากิจ: <span class="font-bold">ไม่เกิน 10 วัน/ปี</span></li>
+                                      <li>ไปราชการ: <span class="font-bold">ตามที่ได้รับอนุมัติ</span></li>
+                                      <li>ลาอื่นๆ: <span class="font-bold">ตามระเบียบ</span></li>
+                                    </ul>
+                                    <div id="leave-warning" class="mt-3"></div>
+                                  </div>
+                                </div>
+                                  <div class="overflow-x-auto rounded-xl shadow-lg bg-white">
+                                    <table class="min-w-full divide-y divide-gray-200" id="record_table">
+                                      <thead class="bg-gray-800">
+                                        <tr>
+                                          <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">ครั้งที่</th>
+                                          <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">แจ้งการลา</th>
+                                          <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">วันที่เริ่มต้น</th>
+                                          <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">วันที่สิ้นสุด</th>
+                                          <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">รวมวันลา</th>
+                                          <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">เหตุผล</th>
+                                          <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">จัดการ</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody></tbody>
+                                      <tfoot class="bg-gray-100">
+                                        <tr>
+                                          <th colspan="5" class="text-center font-semibold">รวมวันลาทั้งหมด</th>
+                                          <th id="total_leave_days" class="text-center">-</th>
+                                          <th></th>
+                                        </tr>
+                                        <tr>
+                                          <th colspan="5" class="text-center font-semibold">รวมวันลาป่วย</th>
+                                          <th id="total_sick_leave_days" class="text-center">-</th>
+                                          <th></th>
+                                        </tr>
+                                        <tr>
+                                          <th colspan="5" class="text-center font-semibold">รวมวันลากิจ</th>
+                                          <th id="total_personal_leave_days" class="text-center">-</th>
+                                          <th></th>
+                                        </tr>
+                                        <tr>
+                                          <th colspan="5" class="text-center font-semibold">รวมวันไปราชการ</th>
+                                          <th id="total_official_leave_days" class="text-center">-</th>
+                                          <th></th>
+                                        </tr>
+                                        <tr>
+                                          <th colspan="5" class="text-center font-semibold">รวมวันลาอื่นๆ</th>
+                                          <th id="total_other_leave_days" class="text-center">-</th>
+                                          <th></th>
+                                        </tr>
+                                      </tfoot>
+                                    </table>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php require_once('../footer.php'); ?>
+      </div>
 </div>
-<!-- ./wrapper -->
 
 <!-- Add Modal -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
@@ -227,41 +252,39 @@ require_once('header.php');
   </div>
 </div>
 
+
 <script>
+// Pass pee (ปีการศึกษา) from PHP to JS
+const pee = <?= json_encode($pee) ?>;
 
-$(document).ready(function() {
-  // Function to handle printing
-  window.printPage = function () {
-      let elementsToHide = $('#printButton, #date_start_selector, #date_end_selector, #filter, #reset, #addLeave, #footer, #range1, #range2, #customRange, #dateRangeSelector, .dataTables_length, .dataTables_filter, .dataTables_paginate, .dataTables_info');
-      let lastColumn = $('#record_table th:last-child, #record_table td:last-child');
+// --- Modularized JS for maintainability ---
+function setupPrintLayout() {
+  var style = '@page { size: A4 landscape; margin: 0.5in; }';
+  var printStyle = document.createElement('style');
+  printStyle.appendChild(document.createTextNode(style));
+  document.head.appendChild(printStyle);
+}
 
-      elementsToHide.hide();
-      lastColumn.hide(); // Hide the last column
-      $('thead').css('display', 'table-header-group'); // บังคับให้หัวข้อแสดง
+function printPage() {
+  let elementsToHide = $('#printButton, #date_start_selector, #date_end_selector, #filter, #reset, #addLeave, #footer, #range1, #range2, #customRange, #dateRangeSelector, .dataTables_length, .dataTables_filter, .dataTables_paginate, .dataTables_info');
+  let lastColumn = $('#record_table th:last-child, #record_table td:last-child');
+  elementsToHide.hide();
+  lastColumn.hide();
+  $('thead').css('display', 'table-header-group');
+  setTimeout(() => {
+    window.print();
+    elementsToHide.show();
+    lastColumn.show();
+  }, 100);
+}
 
-      setTimeout(() => {
-          window.print();
-          elementsToHide.show();
-          lastColumn.show(); // Show the last column after printing
-      }, 100);
-  };
-
-  // Function to set up the print layout
-  function setupPrintLayout() {
-    // Set page properties for landscape A4 with 0.5 inch margins
-    var style = '@page { size: A4 landscape; margin: 0.5in; }';
-    var printStyle = document.createElement('style');
-    printStyle.appendChild(document.createTextNode(style));
-    document.head.appendChild(printStyle);
-  }
-
-  // Call setupPrintLayout when document is ready
-  setupPrintLayout();
-
+function handleAddLeaveModal() {
   $('#addLeave').on('click', function() {
     $('#addModal').modal('show');
   });
+}
 
+function handleStatusChange() {
   $('#addStatus').change(function() {
     if ($(this).val() == '9') {
       $('#otherLeaveTypeGroup').show();
@@ -270,12 +293,12 @@ $(document).ready(function() {
       $('#otherLeaveType').val('');
     }
   });
+}
 
+function handleSaveAdd() {
   $('#saveAdd').on('click', function() {
     const form = document.getElementById('addForm');
     const formData = new FormData(form);
-
-    // Check if all required fields are filled
     let isValid = true;
     form.querySelectorAll('[required]').forEach(function(input) {
       if (!input.value) {
@@ -285,35 +308,30 @@ $(document).ready(function() {
         input.classList.remove('is-invalid');
       }
     });
-
     if (!isValid) {
       Swal.fire('ข้อผิดพลาด', 'กรุณากรอกข้อมูลให้ครบทุกช่อง', 'error');
       return;
     }
-
     $.ajax({
-      url: 'api/insert_leave.php', // Updated URL
+      url: 'api/insert_leave.php',
       method: 'POST',
       data: formData,
       processData: false,
       contentType: false,
       dataType: 'json',
       beforeSend: function() {
-        // Show progress bar
         Swal.fire({
-            title: 'กำลังบันทึก...',
-            text: 'กรุณารอสักครู่',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+          title: 'กำลังบันทึก...',
+          text: 'กรุณารอสักครู่',
+          allowOutsideClick: false,
+          didOpen: () => { Swal.showLoading(); }
         });
       },
       success: function(data) {
         if (data.success) {
           Swal.fire('สำเร็จ', 'เพิ่มการแจ้งลาเรียบร้อยแล้ว', 'success').then(() => {
             $('#addModal').modal('hide');
-            location.reload(); // Reload the page with updated data
+            location.reload();
           });
         } else {
           Swal.fire('ข้อผิดพลาด', data.message, 'error');
@@ -326,34 +344,33 @@ $(document).ready(function() {
       }
     });
   });
+}
 
+function handleDateRangeChange() {
   $('input[name="dateRange"]').change(function() {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const nextYear = currentYear + 1;
-    const prevYear = currentYear - 1;
-
+    // Use pee (ปีการศึกษา) for date range calculation
+    const peeInt = parseInt(pee-543);
     if (this.id === 'range1') {
-      if (currentDate < new Date(`${currentYear}-04-01`)) {
-        $('#select_date_start').val(`${prevYear}-10-01`);
-        $('#select_date_end').val(`${currentYear}-03-31`);
-      } else {
-        $('#select_date_start').val(`${currentYear}-10-01`);
-        $('#select_date_end').val(`${nextYear}-03-31`);
-      }
+      // ครึ่งปีแรก: 1 ต.ค. (pee-1) - 31 มี.ค. (pee)
+      $('#select_date_start').val(`${peeInt-1}-10-01`);
+      $('#select_date_end').val(`${peeInt}-03-31`);
     } else if (this.id === 'range2') {
-      if (currentDate < new Date(`${currentYear}-04-01`)) {
-        $('#select_date_start').val(`${currentYear}-04-01`);
-        $('#select_date_end').val(`${currentYear}-09-30`);
-      } else {
-        $('#select_date_start').val(`${nextYear}-04-01`);
-        $('#select_date_end').val(`${nextYear}-09-30`);
-      }
+      // ครึ่งปีหลัง: 1 เม.ย. (pee) - 30 ก.ย. (pee)
+      $('#select_date_start').val(`${peeInt}-04-01`);
+      $('#select_date_end').val(`${peeInt}-09-30`);
     } else {
       $('#select_date_start').val('');
       $('#select_date_end').val('');
     }
   });
+}
+
+$(document).ready(function() {
+  setupPrintLayout();
+  handleAddLeaveModal();
+  handleStatusChange();
+  handleSaveAdd();
+  handleDateRangeChange();
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -444,6 +461,20 @@ updateCharCount();
         return `${day} ${month} ${year}`;
     }
 
+    function countWeekdays(startDate, endDate) {
+        let count = 0;
+        let current = new Date(startDate);
+        endDate = new Date(endDate);
+        while (current <= endDate) {
+            const day = current.getDay();
+            if (day !== 0 && day !== 6) { // 0 = Sunday, 6 = Saturday
+                count++;
+            }
+            current.setDate(current.getDate() + 1);
+        }
+        return count;
+    }
+
     function populateLeaveTable(leaves) {
         const table = $('#record_table').DataTable();
         table.clear(); // Clear existing data
@@ -462,8 +493,8 @@ updateCharCount();
                 const startDate = new Date(leave.date_start);
                 const endDate = new Date(leave.date_end);
 
-                // คำนวณจำนวนวัน (รวมวันแรกและวันสุดท้ายด้วย)
-                const totalLeave = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                // คำนวณจำนวนวันลา (ไม่นับเสาร์-อาทิตย์)
+                const totalLeave = countWeekdays(startDate, endDate);
                 totalLeaveDays += totalLeave;
 
                 // Update specific leave type totals
@@ -498,12 +529,29 @@ updateCharCount();
                 ]).draw();
             });
 
-            // Update footer with total leave days
+            // Update footer and summary cards with total leave days
             document.getElementById('total_leave_days').innerText = totalLeaveDays;
             document.getElementById('total_sick_leave_days').innerText = totalSickLeaveDays;
             document.getElementById('total_personal_leave_days').innerText = totalPersonalLeaveDays;
             document.getElementById('total_official_leave_days').innerText = totalOfficialLeaveDays;
             document.getElementById('total_other_leave_days').innerText = totalOtherLeaveDays;
+
+            // Update summary cards
+            document.getElementById('card_total_leave_days').innerText = totalLeaveDays;
+            document.getElementById('card_total_sick_leave_days').innerText = totalSickLeaveDays;
+            document.getElementById('card_total_personal_leave_days').innerText = totalPersonalLeaveDays;
+            document.getElementById('card_total_official_leave_days').innerText = totalOfficialLeaveDays;
+            document.getElementById('card_total_other_leave_days').innerText = totalOtherLeaveDays;
+
+            // Regulation warning
+            let warning = '';
+            if (totalSickLeaveDays > 30) {
+                warning += '<span class="badge badge-danger">ลาป่วยเกิน 30 วัน/ปี</span> ';
+            }
+            if (totalPersonalLeaveDays > 10) {
+                warning += '<span class="badge badge-danger">ลากิจเกิน 10 วัน/ปี</span> ';
+            }
+            document.getElementById('leave-warning').innerHTML = warning;
         }
     }
 

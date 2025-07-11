@@ -73,137 +73,122 @@ require_once('header.php');
     <section class="content">
       <div class="container-fluid">
         
-        <div class="row">
 
-        <div class="col-md-12">
-        <button id="addLeave" class="btn btn-lg btn-success my-2"> <i class="fa fa-plus" aria-hidden="true"></i> เพิ่มการแจ้งลา</button>
-          <div class="callout callout-success text-center">
-          <img src="../dist/img/logo-phicha.png" alt="Phichai Logo" id="logoPrint" class="brand-image rounded-full opacity-80 mb-3 w-12 h-12 mx-auto">
-                        
-                        <h6 class="font-bold bt-2">รายงานการลา<br>
-                        ของ <span id="selected_teacher"></span><br>
-                        กลุ่มสาระ <span id="selected_department"></span><br>
-                        <br>
-                        </h6>
-                                <button class="btn btn-success text-left mb-3 mt-2" id="printButton" onclick="printPage()"> <i class="fa fa-print" aria-hidden="true"></i> พิมพ์รายงาน  <i class="fa fa-print" aria-hidden="true"></i></button>
-                                
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons" id="dateRangeSelector">
-                        <label class="btn btn-outline-info">
-                          <input type="radio" name="dateRange" id="range1" autocomplete="off">ครึ่งปีแรก(1 ต.ค. - 31 มี.ค.)
-                        </label>
-                        <label class="btn btn-outline-warning">
-                          <input type="radio" name="dateRange" id="range2" autocomplete="off">ครึ่งปีหลัง(1 เม.ย. - 30 ก.ย.)
-                        </label>
-                        <label class="btn btn-outline-primary">
-                          <input type="radio" name="dateRange" id="customRange" autocomplete="off"> กำหนดเอง
-                        </label>
-                      </div>
-                    <div class="row">
-                      <div class="col-md-3">
-                        <div class="input-group mb-3" id="department_selector">
-                          <div class="input-group-prepend">
-                            <label class="input-group-text" for="select_department">เลือกกลุ่ม:</label>
-                          </div>
-                          <select name="select_department" id="select_department" class="form-control text-center">
-                            <option value="">เลือกกลุ่ม</option>
-                            <?php foreach ($majors as $major): ?>
-                              <option value="<?= $major['Teach_major'] ?>"><?= $major['Teach_major'] ?></option>
-                            <?php endforeach; ?>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="input-group mb-3" id="teacher_selector">
-                          <div class="input-group-prepend">
-                            <label class="input-group-text" for="select_teacher">เลือกครู:</label>
-                          </div>
-                          <select name="select_teacher" id="select_teacher" class="form-control text-center">
-                            <option value="">เลือกครู</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="input-group mb-3" id="date_start_selector">
-                          <div class="input-group-prepend">
-                            <label class="input-group-text" for="select_date_start">วันที่เริ่มต้น:</label>
-                          </div>
-                          <input type="date" class="form-control text-center" id="select_date_start">
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="input-group mb-3" id="date_end_selector">
-                          <div class="input-group-prepend">
-                            <label class="input-group-text" for="select_date_end">วันที่สิ้นสุด:</label>
-                          </div>
-                          <input type="date" class="form-control text-center" id="select_date_end" >
-                        </div>
-                      </div>
-                    </div>
-                <div>
-                  <button id="filter" class="btn btn-sm btn-outline-info"> <i class="fa fa-search" aria-hidden="true"></i> ค้นหา</button>
-                  <button id="reset" class="btn btn-sm btn-outline-warning"> <i class="fa fa-trash" aria-hidden="true"></i> ล้างค่า</button>
-                </div>
-        <div class="row">
-            <div class="col-md-12 mt-3 mb-3 mx-auto">
-                <div class="table-responsive mx-auto">
-                    <table class="display table-bordered responsive nowrap" id="record_table" style="width:100%;">
-                        <thead class="thead-secondary">
-                        <tr >
-                            <th style="width:5%" class="text-center text-white bg-gray-800">ครั้งที่</th>
-                            <th style="width: 10%;" class="text-center text-white bg-gray-800">แจ้งการลา</th>
-                            <th class="text-center text-white bg-gray-800">วันที่เริ่มต้น</th>
-                            <th class="text-center text-white bg-gray-800">วันที่สิ้นสุด</th>
-                            <th class="text-center text-white bg-gray-800">รวมวันลา</th>
-                            <th class="text-center text-white bg-gray-800">เหตุผล</th>
-                            <th class="text-center text-white bg-gray-800">จัดการ</th>
-                            <!-- Add more table column headers as needed -->
-                        </tr>
-                        </thead>       
-                        <tbody>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลาทั้งหมด</th>
-                                <th id="total_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลาป่วย</th>
-                                <th id="total_sick_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลากิจ</th>
-                                <th id="total_personal_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันไปราชการ</th>
-                                <th id="total_official_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="5" class="text-center">รวมวันลาอื่นๆ</th>
-                                <th id="total_other_leave_days" class="text-center">-</th>
-                                <th></th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <!-- /.row -->
-
-      </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
+<!-- Filter Controls -->
+<div class="w-full flex flex-wrap gap-4 mb-6 justify-center items-end">
+  <div class="flex flex-col">
+    <label for="select_department" class="mb-1 font-semibold text-gray-700">กลุ่มสาระ</label>
+    <select name="select_department" id="select_department" class="block w-48 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <option value="">เลือกกลุ่ม</option>
+      <?php foreach ($majors as $major): ?>
+        <option value="<?= $major['Teach_major'] ?>"><?= $major['Teach_major'] ?></option>
+      <?php endforeach; ?>
+    </select>
   </div>
-  <!-- /.content-wrapper -->
-    <?php require_once('../footer.php');?>
+  <div class="flex flex-col">
+    <label for="select_teacher" class="mb-1 font-semibold text-gray-700">ครู</label>
+    <select name="select_teacher" id="select_teacher" class="block w-48 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <option value="">เลือกครู</option>
+    </select>
+  </div>
+  <div class="flex flex-col">
+    <label for="select_date_start" class="mb-1 font-semibold text-gray-700">วันที่เริ่มต้น</label>
+    <input type="date" id="select_date_start" class="block w-44 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+  </div>
+  <div class="flex flex-col">
+    <label for="select_date_end" class="mb-1 font-semibold text-gray-700">วันที่สิ้นสุด</label>
+    <input type="date" id="select_date_end" class="block w-44 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+  </div>
+  <div class="flex flex-col">
+    <button id="filter" class="w-32 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2">ค้นหา</button>
+    <button id="reset" class="w-32 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">ล้างค่า</button>
+  </div>
 </div>
-<!-- ./wrapper -->
+
+<!-- Tailwind Leave Summary Cards -->
+<div class="flex flex-wrap gap-4 mb-6 justify-center">
+  <div class="w-48 bg-blue-600 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+    <div class="px-4 py-2 font-semibold text-center border-b border-blue-700">รวมวันลาทั้งหมด</div>
+    <div class="p-4 text-3xl font-bold text-center animate-pulse" id="card_total_leave_days">-</div>
+  </div>
+  <div class="w-48 bg-red-500 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+    <div class="px-4 py-2 font-semibold text-center border-b border-red-600">ลาป่วย</div>
+    <div class="p-4 text-3xl font-bold text-center" id="card_total_sick_leave_days">-</div>
+  </div>
+  <div class="w-48 bg-yellow-400 text-gray-900 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+    <div class="px-4 py-2 font-semibold text-center border-b border-yellow-500">ลากิจ</div>
+    <div class="p-4 text-3xl font-bold text-center" id="card_total_personal_leave_days">-</div>
+  </div>
+  <div class="w-48 bg-green-500 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+    <div class="px-4 py-2 font-semibold text-center border-b border-cyan-600">ไปราชการ</div>
+    <div class="p-4 text-3xl font-bold text-center" id="card_total_official_leave_days">-</div>
+  </div>
+  <div class="w-48 bg-gray-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+    <div class="px-4 py-2 font-semibold text-center border-b border-gray-800">ลาอื่นๆ</div>
+    <div class="p-4 text-3xl font-bold text-center" id="card_total_other_leave_days">-</div>
+  </div>
+</div>
+
+<!-- Tailwind Leave Regulation Card -->
+<div class="w-full mb-6 flex justify-center">
+  <div class="w-full max-w-2xl bg-green-100 border-l-4 border-green-500 rounded-xl shadow p-6">
+    <div class="flex items-center mb-2">
+      <svg class="w-6 h-6 text-green-600 mr-2 animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0a9 9 0 0118 0z"/></svg>
+      <span class="font-bold text-green-700 text-lg">ระเบียบวันลาตามแนวปฏิบัติ (ข้าราชการครู)</span>
+    </div>
+    <ul class="list-disc pl-6 text-green-900">
+      <li>ลาป่วย: <span class="font-bold">ไม่เกิน 30 วัน/ปี</span></li>
+      <li>ลากิจ: <span class="font-bold">ไม่เกิน 10 วัน/ปี</span></li>
+      <li>ไปราชการ: <span class="font-bold">ตามที่ได้รับอนุมัติ</span></li>
+      <li>ลาอื่นๆ: <span class="font-bold">ตามระเบียบ</span></li>
+    </ul>
+    <div id="leave-warning" class="mt-3"></div>
+  </div>
+</div>
+
+<div class="overflow-x-auto rounded-xl shadow-lg bg-white">
+  <table class="min-w-full divide-y divide-gray-200" id="record_table">
+    <thead class="bg-gray-800">
+      <tr>
+        <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">ครั้งที่</th>
+        <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">แจ้งการลา</th>
+        <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">วันที่เริ่มต้น</th>
+        <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">วันที่สิ้นสุด</th>
+        <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">รวมวันลา</th>
+        <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">เหตุผล</th>
+        <th class="px-4 py-2 text-center text-xs font-bold text-white uppercase tracking-wider">จัดการ</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot class="bg-gray-100">
+      <tr>
+        <th colspan="5" class="text-center font-semibold">รวมวันลาทั้งหมด</th>
+        <th id="total_leave_days" class="text-center">-</th>
+        <th></th>
+      </tr>
+      <tr>
+        <th colspan="5" class="text-center font-semibold">รวมวันลาป่วย</th>
+        <th id="total_sick_leave_days" class="text-center">-</th>
+        <th></th>
+      </tr>
+      <tr>
+        <th colspan="5" class="text-center font-semibold">รวมวันลากิจ</th>
+        <th id="total_personal_leave_days" class="text-center">-</th>
+        <th></th>
+      </tr>
+      <tr>
+        <th colspan="5" class="text-center font-semibold">รวมวันไปราชการ</th>
+        <th id="total_official_leave_days" class="text-center">-</th>
+        <th></th>
+      </tr>
+      <tr>
+        <th colspan="5" class="text-center font-semibold">รวมวันลาอื่นๆ</th>
+        <th id="total_other_leave_days" class="text-center">-</th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
 
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -595,16 +580,31 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalOfficialLeaveDays = 0;
         let totalOtherLeaveDays = 0;
 
+
         if (leaves.length === 0) {
             table.row.add(['ไม่พบข้อมูล', '', '', '', '', '']).draw();
         } else {
             leaves.forEach((leave, index) => {
-                // แปลงวันที่จากสตริงเป็น Date object
-                const startDate = new Date(leave.date_start);
-                const endDate = new Date(leave.date_end);
-
-                // คำนวณจำนวนวัน (รวมวันแรกและวันสุดท้ายด้วย)
-                const totalLeave = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                // Robust date parsing
+                let totalLeave = 0;
+                let printButton = '', editButton = '', delButton = '';
+                try {
+                    const startDate = new Date(leave.date_start);
+                    const endDate = new Date(leave.date_end);
+                    if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
+                        // Count only weekdays (Mon-Fri)
+                        let current = new Date(startDate);
+                        while (current <= endDate) {
+                            const day = current.getDay();
+                            if (day !== 0 && day !== 6) { // 0 = Sunday, 6 = Saturday
+                                totalLeave++;
+                            }
+                            current.setDate(current.getDate() + 1);
+                        }
+                    }
+                } catch (e) {
+                    totalLeave = 0;
+                }
                 totalLeaveDays += totalLeave;
 
                 // Update specific leave type totals
@@ -623,11 +623,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         break;
                 }
 
-                let printButton = '';
                 if (['1', '2', '4', '9'].includes(leave.status)) {
                     printButton = `<a href="print_leave.php?id=${leave.id}" target="_blank" class="btn-sm bg-blue-500 text-white ml-2 mt-2">พิมพ์</a>`;
-                    editButton = `<button class="btn-sm bg-yellow-500 text-white ml-2 mt-2 edit-leave" data-id="${leave.id}">แก้ไข</button>`; // เพิ่มปุ่มแก้ไข
-                    delButton = `<button class="btn-sm bg-red-500 text-white ml-2 mt-2 del-leave" data-id="${leave.id}">ลบ</button>`; // เพิ่มปุ่มลบ
+                    editButton = `<button class="btn-sm bg-yellow-500 text-white ml-2 mt-2 edit-leave" data-id="${leave.id}">แก้ไข</button>`;
+                    delButton = `<button class="btn-sm bg-red-500 text-white ml-2 mt-2 del-leave" data-id="${leave.id}">ลบ</button>`;
                 }
 
                 table.row.add([
@@ -637,16 +636,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     convertToThaiDate(leave.date_end),
                     totalLeave,
                     leave.detail,
-                    printButton + editButton + delButton // รวมปุ่มพิมพ์และแก้ไข
+                    printButton + editButton + delButton
                 ]).draw();
             });
 
-            // Update footer with total leave days
+            // Update footer and summary cards with total leave days
             document.getElementById('total_leave_days').innerText = totalLeaveDays;
             document.getElementById('total_sick_leave_days').innerText = totalSickLeaveDays;
             document.getElementById('total_personal_leave_days').innerText = totalPersonalLeaveDays;
             document.getElementById('total_official_leave_days').innerText = totalOfficialLeaveDays;
             document.getElementById('total_other_leave_days').innerText = totalOtherLeaveDays;
+
+            // Update summary cards
+            document.getElementById('card_total_leave_days').innerText = totalLeaveDays;
+            document.getElementById('card_total_sick_leave_days').innerText = totalSickLeaveDays;
+            document.getElementById('card_total_personal_leave_days').innerText = totalPersonalLeaveDays;
+            document.getElementById('card_total_official_leave_days').innerText = totalOfficialLeaveDays;
+            document.getElementById('card_total_other_leave_days').innerText = totalOtherLeaveDays;
+
+            // Regulation warning
+            let warning = '';
+            if (totalSickLeaveDays > 30) {
+                warning += '<span class="bg-red-500 text-white px-2 py-1 rounded">ลาป่วยเกิน 30 วัน/ปี</span> ';
+            }
+            if (totalPersonalLeaveDays > 10) {
+                warning += '<span class="bg-red-500 text-white px-2 py-1 rounded">ลากิจเกิน 10 วัน/ปี</span> ';
+            }
+            document.getElementById('leave-warning').innerHTML = warning;
         }
     }
 
