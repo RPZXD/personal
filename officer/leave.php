@@ -74,6 +74,14 @@ require_once('header.php');
       <div class="container-fluid">
         
 
+<!-- Add Leave Button -->
+<div class="w-full flex justify-center mb-4">
+  <button id="addLeave" type="button" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+    เพิ่มการแจ้งลา
+  </button>
+</div>
+
 <!-- Filter Controls -->
 <div class="w-full flex flex-wrap gap-4 mb-6 justify-center items-end">
   <div class="flex flex-col">
