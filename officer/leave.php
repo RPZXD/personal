@@ -130,7 +130,7 @@ require_once('header.php');
 </div>
 
 <!-- Tailwind Leave Regulation Card -->
-<div class="w-full mb-6 flex justify-center">
+<!-- <div class="w-full mb-6 flex justify-center">
   <div class="w-full max-w-2xl bg-green-100 border-l-4 border-green-500 rounded-xl shadow p-6">
     <div class="flex items-center mb-2">
       <svg class="w-6 h-6 text-green-600 mr-2 animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0a9 9 0 0118 0z"/></svg>
@@ -144,7 +144,7 @@ require_once('header.php');
     </ul>
     <div id="leave-warning" class="mt-3"></div>
   </div>
-</div>
+</div> -->
 
 <div class="overflow-x-auto rounded-xl shadow-lg bg-white">
   <table class="min-w-full divide-y divide-gray-200" id="record_table">
