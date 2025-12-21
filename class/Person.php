@@ -132,34 +132,135 @@ class Person {
     }
 
 
-    public function getTotalHoursAndMinutes($tid, $term, $year) {
+    public function getTotalHoursAndMinutes($tid, $term = '', $year = '') {
         $query = "SELECT
                     FLOOR(SUM(hours) + SUM(mn) / 60) AS total_hours,
                     MOD(SUM(mn), 60) AS total_minutes
                   FROM {$this->table_seminar}
-                  WHERE tid = :tid AND term = :term AND year = :year
-                  GROUP BY tid";
+                  WHERE tid = :tid";
+        
+        if (!empty($term)) {
+            $query .= " AND term = :term";
+        }
+        if (!empty($year)) {
+            $query .= " AND year = :year";
+        }
+        
+        $query .= " GROUP BY tid";
+        
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
-        $stmt->bindParam(':term', $term);
-        $stmt->bindParam(':year', $year);
+        
+        if (!empty($term)) {
+            $stmt->bindParam(':term', $term);
+        }
+        if (!empty($year)) {
+            $stmt->bindParam(':year', $year);
+        }
+        
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$result) {
+            return ['total_hours' => 0, 'total_minutes' => 0];
+        }
+        
+        return $result;
     }
 
-    public function getTotalHoursAndMinutesByTermAndYear($term, $year) {
+    public function getTotalHoursAndMinutesByTermAndYear($term = 'all', $year = 'all') {
         $query = "SELECT
                     tid,
                     FLOOR(SUM(hours) + SUM(mn) / 60) AS total_hours,
                     MOD(SUM(mn), 60) AS total_minutes
-                  FROM {$this->table_seminar}
-                  WHERE term = :term AND year = :year
-                  GROUP BY tid";
+                  FROM {$this->table_seminar} WHERE 1=1";
+        
+        if ($term !== 'all' && !empty($term)) {
+            $query .= " AND term = :term";
+        }
+        if ($year !== 'all' && !empty($year)) {
+            $query .= " AND year = :year";
+        }
+        
+        $query .= " GROUP BY tid";
+        
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':term', $term);
-        $stmt->bindParam(':year', $year);
+        
+        if ($term !== 'all' && !empty($term)) {
+            $stmt->bindParam(':term', $term);
+        }
+        if ($year !== 'all' && !empty($year)) {
+            $stmt->bindParam(':year', $year);
+        }
+        
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get all training records with optional term and year filters.
+     * Returns all training records without teacher ID filter.
+     */
+    public function getAllTrainingRecords($term = '', $year = '') {
+        $query = "SELECT * FROM {$this->table_seminar} WHERE 1=1";
+        
+        if (!empty($term)) {
+            $query .= " AND term = :term";
+        }
+        if (!empty($year)) {
+            $query .= " AND year = :year";
+        }
+        
+        $query .= " ORDER BY dstart DESC, semid DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        if (!empty($term)) {
+            $stmt->bindParam(':term', $term);
+        }
+        if (!empty($year)) {
+            $stmt->bindParam(':year', $year);
+        }
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Get total hours and minutes across all teachers with optional filters.
+     * Returns combined total for all training records.
+     */
+    public function getAllTotalHoursAndMinutes($term = '', $year = '') {
+        $query = "SELECT
+                    FLOOR(SUM(hours) + SUM(mn) / 60) AS total_hours,
+                    MOD(SUM(mn), 60) AS total_minutes
+                  FROM {$this->table_seminar} WHERE 1=1";
+        
+        if (!empty($term)) {
+            $query .= " AND term = :term";
+        }
+        if (!empty($year)) {
+            $query .= " AND year = :year";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        
+        if (!empty($term)) {
+            $stmt->bindParam(':term', $term);
+        }
+        if (!empty($year)) {
+            $stmt->bindParam(':year', $year);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Return default values if no records found
+        if (!$result || $result['total_hours'] === null) {
+            return ['total_hours' => 0, 'total_minutes' => 0];
+        }
+        
+        return $result;
     }
 
     public function getTrainingByMonth($month) {

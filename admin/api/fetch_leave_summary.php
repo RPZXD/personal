@@ -14,7 +14,7 @@ $teacherDb = $connectDBuser->getConnection();
 $person = new Person($db);
 $teacher = new Teacher($teacherDb);
 
-$date = isset($_GET['date']) ? $_GET['date'] : die();
+$date = (isset($_GET['date']) && $_GET['date'] !== '') ? $_GET['date'] : date('Y-m-d');
 $leaveSummary = $person->getLeaveSummaryByDate($date);
 
 if ($leaveSummary) {

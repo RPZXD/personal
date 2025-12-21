@@ -1,5 +1,6 @@
 <?php 
-$config = json_decode(file_get_contents(__DIR__ . '/../../config.json'), true);
+$configPath = __DIR__ . '/../../config.json';
+$config = file_exists($configPath) ? json_decode(file_get_contents($configPath), true) : ['global' => ['logoLink' => 'logo-phicha.png', 'nameTitle' => 'PERSONNEL', 'nameschool' => 'School Name']];
 $global = $config['global'];
 
 // Menu configuration for Personnel System
@@ -9,35 +10,35 @@ $menuItems = [
         'name' => 'หน้าหลัก',
         'url' => 'index.php',
         'icon' => 'fa-home',
-        'gradient' => ['from' => 'blue-500', 'to' => 'blue-600'],
+        'gradient' => ['from' => 'blue-500', 'to' => 'indigo-600'],
     ],
     [
         'key' => 'training',
-        'name' => 'บันทึกการอบรม/สัมมนา',
-        'url' => 'teacher/training.php',
+        'name' => 'สรุปการอบรม',
+        'url' => 'training.php',
         'icon' => 'fa-chalkboard-teacher',
-        'gradient' => ['from' => 'purple-500', 'to' => 'indigo-500'],
+        'gradient' => ['from' => 'emerald-500', 'to' => 'teal-600'],
     ],
     [
         'key' => 'awards',
-        'name' => 'บันทึกรางวัล',
-        'url' => 'teacher/awards.php',
+        'name' => 'สรุปรางวัล/ผลงาน',
+        'url' => 'awards.php',
         'icon' => 'fa-trophy',
-        'gradient' => ['from' => 'amber-500', 'to' => 'orange-500'],
+        'gradient' => ['from' => 'amber-500', 'to' => 'orange-600'],
     ],
     [
         'key' => 'leave',
-        'name' => 'ระบบการลา',
-        'url' => 'teacher/leave.php',
+        'name' => 'สรุปการเข้างาน/ลา',
+        'url' => 'leave.php',
         'icon' => 'fa-calendar-minus',
-        'gradient' => ['from' => 'emerald-500', 'to' => 'teal-500'],
+        'gradient' => ['from' => 'rose-500', 'to' => 'pink-600'],
     ],
     [
         'key' => 'report',
-        'name' => 'รายงาน',
-        'url' => 'teacher/report.php',
-        'icon' => 'fa-chart-bar',
-        'gradient' => ['from' => 'rose-500', 'to' => 'pink-500'],
+        'name' => 'สรุปรายงานภาพรวม',
+        'url' => 'report.php',
+        'icon' => 'fa-chart-pie',
+        'gradient' => ['from' => 'indigo-500', 'to' => 'purple-600'],
     ]
 ];
 ?>
@@ -47,79 +48,86 @@ $menuItems = [
 
 <!-- Sidebar -->
 <aside id="sidebar" class="fixed top-0 left-0 z-40 w-72 sm:w-64 h-screen transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0">
-    <!-- Sidebar Background -->
-    <div class="h-full overflow-y-auto bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 dark:from-slate-900 dark:via-slate-950 dark:to-black">
+    <div class="h-full overflow-y-auto bg-gradient-to-b from-slate-900 via-slate-950 to-black">
         
-        <!-- Logo Section with Close Button -->
-        <div class="px-4 sm:px-6 py-5 border-b border-white/10">
+        <!-- Logo Section -->
+        <div class="px-6 py-8 border-b border-white/5">
             <div class="flex items-center justify-between">
-                <a href="index.php" class="flex items-center space-x-3 group flex-1 min-w-0">
-                    <div class="relative flex-shrink-0">
-                        <div class="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                        <img src="dist/img/<?php echo $global['logoLink'] ?? 'logo-phicha.png'; ?>" class="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full ring-2 ring-white/20 group-hover:ring-primary-400 transition-all" alt="Logo">
+                <a href="index.php" class="flex items-center space-x-4 group flex-1">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full blur-lg opacity-40 group-hover:opacity-70 transition-opacity"></div>
+                        <img src="dist/img/<?php echo $global['logoLink'] ?? 'logo-phicha.png'; ?>" class="relative w-12 h-12 rounded-full ring-2 ring-white/10 group-hover:ring-primary-400/50 transition-all" alt="Logo">
                     </div>
-                    <div class="min-w-0">
-                        <span class="text-base sm:text-lg font-bold text-white truncate block"><?php echo $global['nameTitle'] ?? 'PERSONNEL'; ?></span>
-                        <p class="text-xs text-gray-400 truncate">ระบบจัดการบุคลากร</p>
+                    <div>
+                        <span class="text-xl font-black text-white tracking-tight uppercase"><?php echo $global['nameTitle'] ?? 'PERSONNEL'; ?></span>
+                        <p class="text-[10px] font-bold text-primary-400 tracking-[0.2em] uppercase">System Portal</p>
                     </div>
                 </a>
-                <!-- Close button for mobile -->
-                <button onclick="toggleSidebar()" class="lg:hidden p-2 -mr-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 text-gray-400 hover:text-white rounded-xl hover:bg-white/5">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
         </div>
         
         <!-- Navigation -->
-        <nav class="mt-4 sm:mt-6 px-2 sm:px-3 pb-20">
-            <ul class="space-y-1">
-                <!-- Main Menu Items -->
+        <nav class="mt-2 px-3 pb-24">
+            <div class="mb-4 px-4">
+                <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Menu Navigation</p>
+            </div>
+            <ul class="space-y-1.5">
                 <?php foreach ($menuItems as $menu): 
                     $fromColor = $menu['gradient']['from'];
                     $toColor = $menu['gradient']['to'];
-                    $colorBase = explode('-', $fromColor)[0];
+                    $isActive = basename($_SERVER['PHP_SELF']) == basename($menu['url']);
+                    $colorName = explode('-', $fromColor)[0];
                 ?>
                 <li>
-                    <a href="<?php echo htmlspecialchars($menu['url']); ?>" class="sidebar-item flex items-center px-3 sm:px-4 py-3 text-gray-300 rounded-xl hover:bg-white/10 hover:text-white group active:scale-95 transition-all" onclick="closeSidebarOnMobile()">
-                        <span class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-gradient-to-br from-<?php echo $fromColor; ?> to-<?php echo $toColor; ?> rounded-lg shadow-lg shadow-<?php echo $colorBase; ?>-500/30 group-hover:shadow-<?php echo $colorBase; ?>-500/50 transition-shadow">
-                            <i class="fas <?php echo $menu['icon']; ?> text-white text-sm sm:text-base"></i>
+                    <a href="<?php echo htmlspecialchars($menu['url']); ?>" 
+                       class="sidebar-item flex items-center px-4 py-3 rounded-2xl transition-all group active:scale-[0.98] <?php echo $isActive ? 'bg-white/10 text-white border border-white/5 shadow-xl shadow-black/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'; ?>">
+                        <span class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-<?php echo $fromColor; ?> to-<?php echo $toColor; ?> rounded-xl shadow-lg shadow-<?php echo $colorName; ?>-500/20 group-hover:shadow-<?php echo $colorName; ?>-500/40 transition-shadow">
+                            <i class="fas <?php echo $menu['icon']; ?> text-white text-base"></i>
                         </span>
-                        <span class="ml-3 font-medium text-sm sm:text-base"><?php echo htmlspecialchars($menu['name']); ?></span>
+                        <span class="ml-4 font-bold text-sm tracking-tight"><?php echo htmlspecialchars($menu['name']); ?></span>
+                        <?php if($isActive): ?>
+                            <div class="ml-auto w-1.5 h-1.5 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></div>
+                        <?php endif; ?>
                     </a>
                 </li>
                 <?php endforeach; ?>
                 
-                <!-- Divider -->
-                <li class="my-4 border-t border-white/10"></li>
+                <!-- System Divider -->
+                <li class="my-6 px-4">
+                    <div class="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                </li>
                 
                 <!-- Login/Logout -->
                 <?php if (isset($_SESSION['Teacher_login']) || isset($_SESSION['Officer_login']) || isset($_SESSION['Admin_login'])): ?>
                 <li>
-                    <a href="logout.php" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/10 hover:text-white group">
-                        <span class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg shadow-red-500/30 group-hover:shadow-red-500/50 transition-shadow">
+                    <a href="logout.php" class="sidebar-item flex items-center px-4 py-3 text-gray-400 rounded-2xl hover:bg-rose-500/10 hover:text-rose-400 group">
+                        <span class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-rose-500 to-red-600 rounded-xl shadow-lg shadow-rose-500/20 group-hover:shadow-rose-500/40 transition-shadow">
                             <i class="fas fa-sign-out-alt text-white"></i>
                         </span>
-                        <span class="ml-3 font-medium">ออกจากระบบ</span>
+                        <span class="ml-4 font-bold text-sm tracking-tight">ออกจากระบบ</span>
                     </a>
                 </li>
                 <?php else: ?>
                 <li>
-                    <a href="login.php" class="sidebar-item flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/10 hover:text-white group">
-                        <span class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg shadow-lg shadow-gray-500/30 group-hover:shadow-gray-500/50 transition-shadow">
+                    <a href="login.php" class="sidebar-item flex items-center px-4 py-3 text-gray-400 rounded-2xl hover:bg-white/5 hover:text-white group">
+                        <span class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl shadow-lg shadow-primary-500/20 group-hover:shadow-primary-500/40 transition-shadow">
                             <i class="fas fa-sign-in-alt text-white"></i>
                         </span>
-                        <span class="ml-3 font-medium">เข้าสู่ระบบ</span>
+                        <span class="ml-4 font-bold text-sm tracking-tight">เข้าสู่ระบบ</span>
                     </a>
                 </li>
                 <?php endif; ?>
             </ul>
         </nav>
         
-        <!-- Bottom Section -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
-            <div class="text-center text-xs text-gray-500">
-                <p><?php echo $global['nameschool'] ?? ''; ?></p>
-                <p class="mt-1">Version 2.0</p>
+        <!-- Bottom Credits -->
+        <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+            <div class="text-center">
+                <p class="text-[10px] font-black text-gray-600 uppercase tracking-widest"><?php echo $global['nameschool'] ?? 'โรงเรียนพิชัย'; ?></p>
+                <p class="text-[8px] text-gray-700 mt-1 font-bold italic opacity-50 uppercase tracking-tighter">Personnel System v2.0</p>
             </div>
         </div>
     </div>

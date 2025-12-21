@@ -44,7 +44,7 @@
     <!-- Feature Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- การอบรม/สัมมนา -->
-        <a href="teacher/training.php" class="group">
+        <a href="training.php" class="group">
             <div class="glass rounded-2xl p-6 h-full relative overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500 to-cyan-400 opacity-20 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 <div class="relative">
@@ -68,7 +68,7 @@
         </a>
 
         <!-- รางวัล -->
-        <a href="teacher/awards.php" class="group">
+        <a href="awards.php" class="group">
             <div class="glass rounded-2xl p-6 h-full relative overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500 to-orange-500 opacity-20 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 <div class="relative">
@@ -91,7 +91,7 @@
         </a>
 
         <!-- การลา -->
-        <a href="teacher/leave.php" class="group">
+        <a href="leave.php" class="group">
             <div class="glass rounded-2xl p-6 h-full relative overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500 to-teal-400 opacity-20 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 <div class="relative">

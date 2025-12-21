@@ -1,9 +1,32 @@
 <?php
-include_once("../../config/Database.php");
-include_once("../../class/Person.php");
-include_once("../../class/Teacher.php");
+/**
+ * Public Training Summary API
+ * Returns aggregate training hours data for all teachers.
+ * 
+ * Parameters:
+ * - term: (optional) Term number (1 or 2), or empty for all terms
+ * - year: (optional) Academic year, or empty for all years
+ * 
+ * Response:
+ * {
+ *   "success": true,
+ *   "data": [
+ *     {
+ *       "tid": "T001",
+ *       "total_hours": 24,
+ *       "total_minutes": 30,
+ *       "teacher_name": "นายสมชาย ใจดี",
+ *       "teacher_department": "วิทยาศาสตร์"
+ *     },
+ *     ...
+ *   ]
+ * }
+ */
+include_once("../config/Database.php");
+include_once("../class/Person.php");
+include_once("../class/Teacher.php");
 
-// Initialize database connection
+// Initialize database connections
 $connectDB = new Database_Person();
 $db = $connectDB->getConnection();
 
@@ -18,14 +41,11 @@ $teacher = new Teacher($teacherDb);
 $term = (isset($_GET['term']) && $_GET['term'] !== '') ? $_GET['term'] : 'all';
 $year = (isset($_GET['year']) && $_GET['year'] !== '') ? $_GET['year'] : 'all';
 
-// Fetch current term/year if 'all' isn't explicitly wanted (though usually 'all' means all records)
-// Actually, if it's 'all', Person.php needs to handle it.
-// Let's check Person::getTotalHoursAndMinutesByTermAndYear
-
+// Fetch training summary data
 $trainSummary = $person->getTotalHoursAndMinutesByTermAndYear($term, $year);
 
 if ($trainSummary) {
-    foreach ($trainSummary as &$train) { // Use reference to modify the original array
+    foreach ($trainSummary as &$train) {
         $teacherData = $teacher->getTeacherById2($train['tid']);
         if (is_array($teacherData) && isset($teacherData[0]['Teach_name'])) {
             $train['teacher_name'] = $teacherData[0]['Teach_name'];
@@ -35,9 +55,9 @@ if ($trainSummary) {
             $train['teacher_department'] = "Unknown";
         }
     }
-    unset($train); // Break the reference with the last element
+    unset($train);
 
-    // Sort the trainSummary by teacher_department
+    // Sort by department
     usort($trainSummary, function($a, $b) {
         return strcmp($a['teacher_department'], $b['teacher_department']);
     });
