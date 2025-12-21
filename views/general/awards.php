@@ -91,6 +91,18 @@
     </div>
 </div>
 
+<!-- Image Preview Modal -->
+<div id="imageModal" class="fixed inset-0 z-[100] hidden overflow-y-auto bg-black/80 backdrop-blur-sm animate-fade-in flex items-center justify-center p-4">
+    <div class="relative w-full max-w-5xl animate-slide-up">
+        <button onclick="closeImageModal()" class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors text-2xl">
+            <i class="fas fa-times mr-2"></i> ปิด
+        </button>
+        <div class="rounded-3xl overflow-hidden bg-white dark:bg-slate-900 shadow-2xl border border-white/20">
+            <img id="modalImage" src="" class="w-full h-auto max-h-[85vh] object-contain mx-auto">
+        </div>
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     const recordTable = $('#record_table').DataTable({
@@ -148,9 +160,9 @@ $(document).ready(function() {
                 `<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black ${getLevelBadgeClass(item.level)}">${getAwardLevelText(item.level)}</span>`,
                 `<span class="text-xs font-black text-gray-900 dark:text-white">${item.term}/${item.year}</span>`,
                 item.certificate ? 
-                `<a href="uploads/file_award/${item.certificate}" target="_blank" class="block w-16 mx-auto rounded-lg overflow-hidden border border-gray-100 opacity-80 hover:opacity-100 transition-all">
+                `<button onclick="viewImage('uploads/file_award/${item.certificate}')" class="block w-16 mx-auto rounded-lg overflow-hidden border border-gray-100 opacity-80 hover:opacity-100 transition-all cursor-zoom-in">
                     <img src="uploads/file_award/${item.certificate}" class="w-full h-10 object-cover">
-                </a>` : 
+                </button>` : 
                 `<span class="text-[10px] text-gray-300 italic">no proof</span>`
             ]);
         });
@@ -188,6 +200,22 @@ $(document).ready(function() {
             default: return 'ไม่ระบุ';
         }
     }
+
+    window.viewImage = function(src) {
+        $('#modalImage').attr('src', src);
+        $('#imageModal').removeClass('hidden').addClass('flex');
+        $('body').addClass('overflow-hidden');
+    }
+
+    window.closeImageModal = function() {
+        $('#imageModal').addClass('hidden').removeClass('flex');
+        $('body').removeClass('overflow-hidden');
+    }
+
+    // Close on background click
+    $('#imageModal').on('click', function(e) {
+        if (e.target === this) closeImageModal();
+    });
 
     $('#filterBtn').on('click', fetchData);
     fetchData();
