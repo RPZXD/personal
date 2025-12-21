@@ -16,9 +16,15 @@ $response = array('success' => false, 'data' => array(), 'message' => '');
 
 if (!empty($department)) {
     try {
-        $query = "SELECT Teach_id, Teach_name FROM teacher WHERE Teach_major = :department AND Teach_status = '1' ORDER BY Teach_id ASC";
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(':department', $department);
+        // Handle 'all' to fetch all teachers
+        if ($department === 'all') {
+            $query = "SELECT Teach_id, Teach_name, Teach_major FROM teacher WHERE Teach_status = '1' ORDER BY Teach_id ASC";
+            $stmt = $db->prepare($query);
+        } else {
+            $query = "SELECT Teach_id, Teach_name FROM teacher WHERE Teach_major = :department AND Teach_status = '1' ORDER BY Teach_id ASC";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':department', $department);
+        }
         $stmt->execute();
         $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -26,6 +32,8 @@ if (!empty($department)) {
             $response['success'] = true;
             $response['data'] = $teachers;
         } else {
+            $response['success'] = true;
+            $response['data'] = array();
             $response['message'] = 'ไม่พบข้อมูลครูในกลุ่มที่เลือก';
         }
     } catch (Exception $e) {

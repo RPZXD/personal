@@ -195,10 +195,105 @@ $(document).ready(function() {
 </script>
 
 <style>
+/* Mobile Responsive Table - Card Style */
+@media screen and (max-width: 768px) {
+    #record_table thead { display: none; }
+    #record_table tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: var(--card-bg, #ffffff);
+        border-radius: 1.5rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+    .dark #record_table tbody tr {
+        --card-bg: #1e293b;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    #record_table tbody td {
+        display: flex;
+        align-items: flex-start;
+        padding: 0.5rem 0;
+        border: none !important;
+        text-align: left !important;
+    }
+    /* Row number badge */
+    #record_table tbody td:first-child {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+    /* Teacher info - full width */
+    #record_table tbody td:nth-child(2) {
+        padding-right: 3rem;
+        flex-direction: column;
+    }
+    /* Award info */
+    #record_table tbody td:nth-child(3) {
+        padding-top: 0.75rem;
+        border-top: 1px dashed rgba(0, 0, 0, 0.1) !important;
+    }
+    .dark #record_table tbody td:nth-child(3) {
+        border-top-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    #record_table tbody td:nth-child(3)::before {
+        content: "🏆 รางวัล: ";
+        font-weight: 600;
+        color: #64748b;
+        margin-right: 0.5rem;
+        font-size: 10px;
+    }
+    /* Level badge */
+    #record_table tbody td:nth-child(4)::before {
+        content: "📊 ระดับ: ";
+        font-weight: 600;
+        color: #64748b;
+        margin-right: 0.5rem;
+        font-size: 10px;
+    }
+    /* Year/Term */
+    #record_table tbody td:nth-child(5)::before {
+        content: "📅 ปี/เทอม: ";
+        font-weight: 600;
+        color: #64748b;
+        margin-right: 0.5rem;
+        font-size: 10px;
+    }
+    /* Certificate */
+    #record_table tbody td:nth-child(6) {
+        justify-content: flex-start;
+    }
+    #record_table tbody td:nth-child(6)::before {
+        content: "📄 หลักฐาน: ";
+        font-weight: 600;
+        color: #64748b;
+        margin-right: 0.5rem;
+        font-size: 10px;
+    }
+}
+
+/* Print Styles */
 @media print {
-    #sidebar, nav, #filterBtn, select, .dataTables_paginate { display: none !important; }
+    #sidebar, nav, #filterBtn, select, .dataTables_paginate, .dataTables_info, .dataTables_length { display: none !important; }
     body { background: white !important; }
     .glass-morphism { box-shadow: none !important; border: none !important; background: transparent !important; }
+    #record_table thead { display: table-header-group !important; }
+    #record_table tbody tr { display: table-row !important; background: white !important; }
+    #record_table tbody td { display: table-cell !important; border: 1px solid #d1d5db !important; padding: 8px !important; }
+    #record_table tbody td::before { content: none !important; }
     table { width: 100% !important; border: 1px solid black !important; border-collapse: collapse !important; }
     th, td { border: 1px solid black !important; padding: 10px !important; color: black !important; font-size: 10pt !important; }
     th { background: #f0f0f0 !important; font-weight: bold !important; }
