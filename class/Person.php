@@ -7,6 +7,7 @@ class Person {
     private $table_seminar = "tb_seminar";
     private $table_award = "tb_award";
     private $table_leave = "tb_leave";
+    private $table_late_early = "tb_late_early";
 
     public function __construct($db) {
         $this->conn = $db;
@@ -753,5 +754,90 @@ class Person {
             'awards' => $awards,
             'leave' => $leave
         ];
+    }
+
+    public function getLateEarlyByTeacherId($tid, $term = '', $year = '') {
+        $query = "SELECT * FROM {$this->table_late_early} WHERE tid = :tid";
+        if (!empty($term)) $query .= " AND term = :term";
+        if (!empty($year)) $query .= " AND year = :year";
+        $query .= " ORDER BY date_record DESC, id DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':tid', $tid);
+        if (!empty($term)) $stmt->bindParam(':term', $term);
+        if (!empty($year)) $stmt->bindParam(':year', $year);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllLateEarly($tid = '', $date_start = '', $date_end = '') {
+        $query = "SELECT l.*, t.tname AS Teach_name, '' AS Teach_major 
+                  FROM {$this->table_late_early} l
+                  LEFT JOIN tb_teacher t ON l.tid = t.tid
+                  WHERE 1=1";
+        if (!empty($tid)) $query .= " AND l.tid = :tid";
+        if (!empty($date_start)) $query .= " AND l.date_record >= :date_start";
+        if (!empty($date_end)) $query .= " AND l.date_record <= :date_end";
+        $query .= " ORDER BY l.date_record DESC, l.id DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!empty($tid)) $stmt->bindParam(':tid', $tid);
+        if (!empty($date_start)) $stmt->bindParam(':date_start', $date_start);
+        if (!empty($date_end)) $stmt->bindParam(':date_end', $date_end);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getLateEarlyById($id) {
+        $query = "SELECT l.*, '' AS Teach_major FROM {$this->table_late_early} l 
+                  WHERE l.id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+    public function insertLateEarly($data) {
+        $query = "INSERT INTO {$this->table_late_early} (tid, date_record, type, time_record, detail, term, year) 
+                  VALUES (:tid, :date_record, :type, :time_record, :detail, :term, :year)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':tid', $data['tid']);
+        $stmt->bindParam(':date_record', $data['date_record']);
+        $stmt->bindParam(':type', $data['type']);
+        $stmt->bindParam(':time_record', $data['time_record']);
+        $stmt->bindParam(':detail', $data['detail']);
+        $stmt->bindParam(':term', $data['term']);
+        $stmt->bindParam(':year', $data['year']);
+        return $stmt->execute();
+    }
+
+    public function updateLateEarly($data) {
+        $query = "UPDATE {$this->table_late_early} SET 
+                    tid = :tid,
+                    date_record = :date_record,
+                    type = :type,
+                    time_record = :time_record,
+                    detail = :detail,
+                    term = :term,
+                    year = :year
+                  WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':tid', $data['tid']);
+        $stmt->bindParam(':date_record', $data['date_record']);
+        $stmt->bindParam(':type', $data['type']);
+        $stmt->bindParam(':time_record', $data['time_record']);
+        $stmt->bindParam(':detail', $data['detail']);
+        $stmt->bindParam(':term', $data['term']);
+        $stmt->bindParam(':year', $data['year']);
+        $stmt->bindParam(':id', $data['id']);
+        return $stmt->execute();
+    }
+
+    public function deleteLateEarly($id) {
+        $query = "DELETE FROM {$this->table_late_early} WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
     }
 }

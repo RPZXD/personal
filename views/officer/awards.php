@@ -16,6 +16,9 @@
                 </div>
             </div>
             <div class="flex flex-wrap justify-center gap-3 w-full md:w-auto">
+                <button id="addAward" class="flex-1 md:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-2xl bg-indigo-500/30 backdrop-blur text-white text-sm md:text-base font-bold hover:bg-indigo-500/50 transition-all border border-white/30 flex items-center justify-center gap-2">
+                    <i class="fas fa-plus"></i> เพิ่มข้อมูล
+                </button>
                 <button onclick="printPage()" class="flex-1 md:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-2xl bg-white text-indigo-700 text-sm md:text-base font-bold hover:bg-indigo-50 transition-all shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-print"></i> พิมพ์รายงาน
                 </button>
@@ -109,6 +112,124 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
+<!-- Modal: Add/Edit Award -->
+<div id="awardModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm animate-fade-in">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="glass-morphism rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-slide-up bg-white dark:bg-slate-900 border border-white/20">
+            <div class="p-6 bg-gradient-to-r from-indigo-600 to-violet-600 flex justify-between items-center text-white">
+                <h3 id="modalTitle" class="text-xl font-black tracking-tight flex items-center gap-2">
+                    <i class="fas fa-plus-circle"></i>
+                    เพิ่มข้อมูลรางวัล
+                </h3>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="awardForm" enctype="multipart/form-data" class="p-8 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-thin">
+                <input type="hidden" id="award_id" name="awardid">
+                <input type="hidden" id="award_tid" name="tid">
+
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ชื่อรางวัล / ผลงาน</label>
+                        <input type="text" name="award" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ระดับรางวัล</label>
+                            <select name="level" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="">เลือกระดับรางวัล</option>
+                                <option value="1">เขต/จังหวัด</option>
+                                <option value="2">ระดับภาค</option>
+                                <option value="3">ระดับชาติ</option>
+                                <option value="4">ระดับนานาชาติ</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">วันที่ได้รับ</label>
+                            <input type="date" name="date1" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">เทอม</label>
+                            <select name="term" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="1">เทอม 1</option>
+                                <option value="2">เทอม 2</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ปีการศึกษา</label>
+                            <input type="text" name="year" value="<?= $pee ?>" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">หน่วยงานที่มอบรางวัล</label>
+                        <input type="text" name="department" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">หลักฐาน / เกียรติบัตร (ไฟล์รูปภาพ)</label>
+                        <div class="relative group">
+                            <input type="file" name="certificate" accept="image/*" class="hidden" id="file_input">
+                            <label for="file_input" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-3xl p-6 hover:border-indigo-500 transition-all cursor-pointer group-hover:bg-indigo-50/50 dark:group-hover:bg-indigo-500/5">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 group-hover:text-indigo-500 mb-2"></i>
+                                <span class="text-sm text-gray-500 group-hover:text-indigo-600 font-medium">คลิกเพื่ออัปโหลดเกียรติบัตร</span>
+                            </label>
+                        </div>
+                        <div id="preview_container" class="hidden mt-4 text-center">
+                            <img id="file_preview" src="#" class="mx-auto rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 max-h-48 object-cover">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-6 py-2.5 rounded-2xl bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 transition-all">ยกเลิก</button>
+                <button id="saveBtn" class="px-8 py-2.5 rounded-2xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all shadow-lg flex items-center gap-2">
+                    <i class="fas fa-save"></i> บันทึกข้อมูล
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: View Award -->
+<div id="viewModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="glass-morphism rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl animate-slide-up bg-white dark:bg-slate-900 border border-white/20">
+            <div class="p-6 bg-gradient-to-r from-indigo-600 to-violet-600 flex justify-between items-center text-white">
+                <h3 class="text-xl font-black tracking-tight flex items-center gap-2 uppercase">
+                    <i class="fas fa-info-circle"></i> รายละเอียดรางวัล
+                </h3>
+                <button onclick="closeViewModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="viewDetails" class="p-8">
+                <!-- Loaded by AJAX -->
+            </div>
+            <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end">
+                <button onclick="closeViewModal()" class="px-8 py-2.5 rounded-2xl bg-gray-800 text-white font-bold hover:bg-black transition-all">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Image Preview -->
+<div id="imageModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-300">
+    <div class="absolute top-6 right-6 z-50">
+        <button onclick="closeImageModal()" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all group">
+            <i class="fas fa-times text-xl group-hover:rotate-90 transition-transform duration-300"></i>
+        </button>
+    </div>
+    <div class="relative w-full max-w-5xl p-4 animate-zoom-in">
+        <img id="modal_image_src" src="" class="w-auto max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-white/10">
     </div>
 </div>
 
@@ -216,17 +337,201 @@ $(document).ready(function() {
                 `<span class="text-sm font-medium text-slate-700 dark:text-slate-300">${convertToThaiDate(item.date1)}</span>`,
                 `<span class="text-xs font-bold text-slate-600 dark:text-slate-400">${item.term}/${item.year}</span>`,
                 item.certificate ? 
-                `<a href="../uploads/file_award/${item.certificate}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-                    <img src="../uploads/file_award/${item.certificate}" class="w-full h-12 object-cover border border-gray-100 dark:border-gray-700" onerror="this.parentElement.style.display='none'">
-                </a>` : 
+                `<div onclick="openImageModal('../uploads/file_award/${item.certificate}')" class="cursor-pointer block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                    <img src="../uploads/file_award/${item.certificate}" class="w-full h-12 object-cover border border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform">
+                </div>` : 
                 `<div class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-slate-800/50 py-2 rounded-lg no-print">no img</div>`,
                 `<div class="no-print flex gap-2 justify-center">
-                    <button class="w-8 h-8 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition-all flex items-center justify-center edit-award" data-id="${item.awid}"><i class="fas fa-edit text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all flex items-center justify-center btn-view" data-id="${item.awid}"><i class="fas fa-eye text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition-all flex items-center justify-center btn-edit" data-id="${item.awid}"><i class="fas fa-edit text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-rose-500 text-white hover:bg-rose-600 transition-all flex items-center justify-center btn-del" data-id="${item.awid}"><i class="fas fa-trash text-xs"></i></button>
                 </div>`
             ]);
         });
         recordTable.draw();
+        attachActionEvents();
     }
+
+    function attachActionEvents() {
+        $('.btn-view').on('click', function() {
+            showViewModal($(this).data('id'));
+        });
+        $('.btn-edit').on('click', function() {
+            showEditModal($(this).data('id'));
+        });
+        $('.btn-del').on('click', function() {
+            confirmDelete($(this).data('id'));
+        });
+    }
+
+    function showViewModal(id) {
+        $.ajax({
+            url: 'api/fetch_award_details.php',
+            method: 'GET',
+            dataType: 'json',
+            data: { id: id },
+            success: function(res) {
+                if (res.success) {
+                    const d = res.details;
+                    const html = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div class="p-6 rounded-3xl bg-indigo-50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/20">
+                                    <h4 class="text-indigo-700 dark:text-indigo-400 text-xs font-black uppercase mb-4 tracking-widest">ข้อมูลรางวัล</h4>
+                                    <div class="space-y-4">
+                                        <div><span class="text-xs text-gray-400 uppercase">ชื่อรางวัล</span><p class="text-lg font-black text-gray-900 dark:text-white">${d.award}</p></div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div><span class="text-xs text-gray-400 uppercase">ระดับ</span><p class="font-bold text-indigo-600">${getAwardLevelText(d.level)}</p></div>
+                                            <div><span class="text-xs text-gray-400 uppercase">วันที่ได้รับ</span><p class="font-bold">${convertToThaiDate(d.date1)}</p></div>
+                                        </div>
+                                        <div><span class="text-xs text-gray-400 uppercase">หน่วยงานที่มอบ</span><p class="font-bold text-gray-700 dark:text-gray-300">${d.department}</p></div>
+                                        <div><span class="text-xs text-gray-400 uppercase">ปีการศึกษา</span><p class="font-bold">เทอม ${d.term} / ${d.year}</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <h4 class="text-gray-900 dark:text-white text-xs font-black uppercase tracking-widest">เกียรติบัตร / หลักฐาน</h4>
+                                <div class="group relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-700 aspect-[4/3] bg-gray-100 dark:bg-slate-800">
+                                    <img src="../uploads/file_award/${d.certificate}" class="w-full h-full object-contain" onerror="this.src='../dist/img/no-image.png'">
+                                    <a href="../uploads/file_award/${d.certificate}" target="_blank" class="absolute inset-0 bg-indigo-600/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white scale-110 group-hover:scale-100">
+                                        <div class="px-6 py-2 rounded-full border-2 border-white font-bold backdrop-blur-sm">ดูรูปขนาดเต็ม</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $('#viewDetails').html(html);
+                    $('#viewModal').removeClass('hidden');
+                    $('body').addClass('overflow-hidden');
+                }
+            }
+        });
+    }
+
+    function showEditModal(id) {
+        $.ajax({
+            url: 'api/fetch_award_details.php',
+            method: 'GET',
+            dataType: 'json',
+            data: { id: id },
+            success: function(res) {
+                if (res.success) {
+                    const d = res.details;
+                    $('#modalTitle').html('<i class="fas fa-edit"></i> แก้ไขข้อมูลรางวัล');
+                    $('#award_id').val(d.awid);
+                    $('#award_tid').val(d.tid);
+                    $('[name="award"]').val(d.award);
+                    $('[name="level"]').val(d.level);
+                    $('[name="date1"]').val(d.date1);
+                    $('[name="term"]').val(d.term);
+                    $('[name="year"]').val(d.year);
+                    $('[name="department"]').val(d.department);
+                    
+                    if (d.certificate) {
+                        $('#file_preview').attr('src', '../uploads/file_award/' + d.certificate);
+                        $('#preview_container').removeClass('hidden');
+                    }
+                    
+                    $('#awardModal').removeClass('hidden');
+                    $('body').addClass('overflow-hidden');
+                }
+            }
+        });
+    }
+
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'ยืนยันการลบ?',
+            text: "ข้อมูลรางวัลนี้จะถูกลบอย่างถาวร!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'ใช่, ลบข้อมูล!',
+            cancelButtonText: 'ยกเลิก',
+            background: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff',
+            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'api/del_award.php',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { id: id },
+                    success: function(res) {
+                        if (res.success) {
+                            Swal.fire('สำเร็จ!', 'ลบข้อมูลเรียบร้อยแล้ว.', 'success');
+                            fetchAwardData();
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    window.closeModal = function() {
+        $('#awardModal').addClass('hidden');
+        $('body').removeClass('overflow-hidden');
+        $('#awardForm')[0].reset();
+        $('#preview_container').addClass('hidden');
+    }
+
+    window.closeViewModal = function() {
+        $('#viewModal').addClass('hidden');
+        $('body').removeClass('overflow-hidden');
+    }
+
+    window.openImageModal = function(src) {
+        $('#modal_image_src').attr('src', src);
+        $('#imageModal').removeClass('hidden').addClass('flex');
+        $('body').addClass('overflow-hidden');
+    }
+
+    window.closeImageModal = function() {
+        $('#imageModal').addClass('hidden').removeClass('flex');
+        if (!$('#awardModal').is(':visible') && !$('#viewModal').is(':visible')) {
+            $('body').removeClass('overflow-hidden');
+        }
+    }
+
+    $('#saveBtn').on('click', function() {
+        const form = document.getElementById('awardForm');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        
+        const data = new FormData(form);
+        const url = $('#award_id').val() ? 'api/update_award.php' : 'api/insert_award.php';
+        
+        Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        
+        $.ajax({
+            url: url,
+            method: 'POST',
+            dataType: 'json',
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                Swal.close();
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'สำเร็จ!', text: res.message, timer: 1500, showConfirmButton: false });
+                    closeModal();
+                    fetchAwardData();
+                } else {
+                    Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
+                }
+            }
+        });
+    } );
+
+    $('#file_input').on('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (re) => { $('#file_preview').attr('src', re.target.result); $('#preview_container').removeClass('hidden'); };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
 
     function getAwardLevelText(level) {
         switch (level) {
@@ -258,6 +563,21 @@ $(document).ready(function() {
     window.printPage = function() {
         window.print();
     };
+
+    $('#addAward').on('click', function() {
+        const selectedTid = $('#select_teacher').val();
+        if (!selectedTid) {
+            Swal.fire('กรุณาเลือกครู', 'กรุณาเลือกครูที่ต้องการเพิ่มข้อมูลรางวัลให้ก่อน', 'warning');
+            return;
+        }
+        $('#modalTitle').html('<i class="fas fa-plus-circle"></i> เพิ่มข้อมูลรางวัล');
+        $('#awardForm')[0].reset();
+        $('#award_id').val('');
+        $('#award_tid').val(selectedTid);
+        $('#preview_container').addClass('hidden');
+        $('#awardModal').removeClass('hidden');
+        $('body').addClass('overflow-hidden');
+    });
 });
 </script>
 
@@ -299,4 +619,10 @@ $(document).ready(function() {
     #record_table tbody td::before { content: none !important; }
     @page { size: A4 portrait; margin: 1cm; }
 }
+
+@keyframes zoom-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-zoom-in { animation: zoom-in 0.3s ease-out; }
 </style>

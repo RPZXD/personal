@@ -203,6 +203,18 @@
     </div>
 </div>
 
+<!-- Modal: Image Preview -->
+<div id="imageModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-300">
+    <div class="absolute top-6 right-6 z-50">
+        <button onclick="closeImageModal()" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all group">
+            <i class="fas fa-times text-xl group-hover:rotate-90 transition-transform duration-300"></i>
+        </button>
+    </div>
+    <div class="relative w-full max-w-5xl p-4 animate-zoom-in">
+        <img id="modal_image_src" src="" class="w-auto max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-white/10">
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     // Initialize Table
@@ -251,8 +263,8 @@ $(document).ready(function() {
                         `<span class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">${item.Teach_Position2}</span>`,
                         getStatusBadge(item.Teach_status),
                         `<div class="flex justify-center">
-                            <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-slate-100 dark:bg-slate-800">
-                                <img src="../dist/img/person/${item.Teach_photo}" class="w-full h-full object-cover" onerror="this.src='../dist/img/avatar.png'">
+                            <div onclick="openImageModal('../dist/img/person/${item.Teach_photo}')" class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm bg-slate-100 dark:bg-slate-800 cursor-pointer group">
+                                <img src="../dist/img/person/${item.Teach_photo}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" onerror="this.src='../dist/img/avatar.png'">
                             </div>
                          </div>`,
                         getRoleBadge(item.role_person),
@@ -299,6 +311,19 @@ $(document).ready(function() {
         $('#teacherForm')[0].reset();
         $('#teach_id_old').val('');
     };
+
+    window.openImageModal = function(src) {
+        $('#modal_image_src').attr('src', src);
+        $('#imageModal').removeClass('hidden').addClass('flex');
+        $('body').addClass('overflow-hidden');
+    }
+
+    window.closeImageModal = function() {
+        $('#imageModal').addClass('hidden').removeClass('flex');
+        if (!$('#teacherModal').is(':visible') && !$('#uploadModal').is(':visible')) {
+            $('body').removeClass('overflow-hidden');
+        }
+    }
 
     window.openAddModal = function() {
         $('#modalTitle').html('<i class="fas fa-plus-circle"></i> เพิ่มข้อมูลครูใหม่');
@@ -479,4 +504,10 @@ $(document).ready(function() {
 #record_table_wrapper .dataTables_paginate .paginate_button.current {
     @apply bg-purple-600 text-white !important;
 }
+
+@keyframes zoom-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-zoom-in { animation: zoom-in 0.3s ease-out; }
 </style>

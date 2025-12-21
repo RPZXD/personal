@@ -254,6 +254,18 @@
     </div>
 </div>
 
+<!-- Modal: Image Preview -->
+<div id="imageModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-300">
+    <div class="absolute top-6 right-6 z-50">
+        <button onclick="closeImageModal()" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all group">
+            <i class="fas fa-times text-xl group-hover:rotate-90 transition-transform duration-300"></i>
+        </button>
+    </div>
+    <div class="relative w-full max-w-5xl p-4 animate-zoom-in">
+        <img id="modal_image_src" src="" class="w-auto max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-white/10">
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     const tid = <?= json_encode($teacher_id); ?>;
@@ -311,9 +323,9 @@ $(document).ready(function() {
                 `<span class="text-sm font-medium text-gray-600 dark:text-gray-400">${convertToThaiDate(item.date1)}</span>`,
                 `<span class="text-xs font-black text-indigo-600 dark:text-indigo-400">${item.term}/${item.year}</span>`,
                 item.certificate ? 
-                `<a href="../uploads/file_award/${item.certificate}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700">
-                    <img src="../uploads/file_award/${item.certificate}" class="w-full h-12 object-cover">
-                </a>` : 
+                `<div onclick="openImageModal('../uploads/file_award/${item.certificate}')" class="cursor-pointer block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all group border border-gray-100 dark:border-gray-700">
+                    <img src="../uploads/file_award/${item.certificate}" class="w-full h-12 object-cover group-hover:scale-110 transition-transform">
+                </div>` : 
                 `<div class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-slate-800/50 py-2 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">no img</div>`,
                 `<div class="flex gap-2 justify-center">
                     <button class="w-8 h-8 rounded-xl bg-indigo-500 text-white hover:bg-indigo-600 transition-all flex items-center justify-center btn-view" data-id="${item.awid}"><i class="fas fa-eye text-xs"></i></button>
@@ -487,6 +499,19 @@ $(document).ready(function() {
     window.closeViewModal = function() {
         $('#viewModal').addClass('hidden');
         $('body').removeClass('overflow-hidden');
+    }
+
+    window.openImageModal = function(src) {
+        $('#modal_image_src').attr('src', src);
+        $('#imageModal').removeClass('hidden').addClass('flex');
+        $('body').addClass('overflow-hidden');
+    }
+
+    window.closeImageModal = function() {
+        $('#imageModal').addClass('hidden').removeClass('flex');
+        if (!$('#awardModal').is(':visible') && !$('#viewModal').is(':visible')) {
+            $('body').removeClass('overflow-hidden');
+        }
     }
 
     $('#addAward').on('click', function() {
@@ -836,4 +861,10 @@ $(document).ready(function() {
     /* Icons */
     i { display: none !important; }
 }
+
+@keyframes zoom-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-zoom-in { animation: zoom-in 0.3s ease-out; }
 </style>

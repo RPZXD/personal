@@ -172,6 +172,18 @@
     </div>
 </div>
 
+<!-- Modal: Image Preview -->
+<div id="imageModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-300">
+    <div class="absolute top-6 right-6 z-50">
+        <button onclick="closeImageModal()" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all group">
+            <i class="fas fa-times text-xl group-hover:rotate-90 transition-transform duration-300"></i>
+        </button>
+    </div>
+    <div class="relative w-full max-w-5xl p-4 animate-zoom-in">
+        <img id="modal_image_src" src="" class="w-auto max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-white/10">
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     // Initialize DataTables
@@ -254,10 +266,10 @@ $(document).ready(function() {
         data.forEach((row, idx) => {
             let certImg = '';
             if (row.sdoc) {
-                // Assuming global variable or data attribute for image base path, or standard path
-                // Using generic check for now or path from original code
                 const basePath = 'uploads/file_seminar/';
-                certImg = `<img src="${basePath}${row.sdoc}" class="h-16 w-auto object-cover rounded-lg border border-gray-200 mx-auto cursor-pointer hover:scale-150 transition-transform" onclick="window.open(this.src)">`;
+                certImg = `<div onclick="openImageModal('${basePath}${row.sdoc}')" class="cursor-pointer block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all group border border-gray-100 dark:border-gray-700">
+                    <img src="${basePath}${row.sdoc}" class="w-full h-12 object-cover group-hover:scale-110 transition-transform" onerror="this.parentElement.style.display='none'">
+                </div>`;
             } else {
                 certImg = '<span class="text-xs text-gray-400">-</span>';
             }
@@ -301,6 +313,19 @@ $(document).ready(function() {
     };
     
     window.closeEditModal = () => $('#editModal').addClass('hidden');
+
+    window.openImageModal = function(src) {
+        $('#modal_image_src').attr('src', src);
+        $('#imageModal').removeClass('hidden').addClass('flex');
+        $('body').addClass('overflow-hidden');
+    }
+
+    window.closeImageModal = function() {
+        $('#imageModal').addClass('hidden').removeClass('flex');
+        if (!$('#editModal').is(':visible')) {
+            $('body').removeClass('overflow-hidden');
+        }
+    }
     
     $('#saveEdit').click(function() {
         const form = document.getElementById('editForm');
@@ -330,4 +355,10 @@ $(document).ready(function() {
     th, td { border: 1px solid black !important; padding: 5px !important; color: black !important; }
     @page { size: landscape; margin: 1cm; }
 }
+
+@keyframes zoom-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-zoom-in { animation: zoom-in 0.3s ease-out; }
 </style>

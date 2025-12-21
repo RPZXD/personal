@@ -34,6 +34,13 @@ $menuItems = [
         'gradient' => ['from' => 'rose-500', 'to' => 'pink-600'],
     ],
     [
+        'key' => 'late_early',
+        'name' => 'เข้าสาย/กลับก่อน',
+        'url' => 'late_early.php',
+        'icon' => 'fa-clock-rotate-left',
+        'gradient' => ['from' => 'violet-500', 'to' => 'purple-600'],
+    ],
+    [
         'key' => 'training_summary',
         'name' => 'สรุปการอบรม',
         'url' => 'training_summary.php',
