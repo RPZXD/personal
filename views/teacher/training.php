@@ -284,6 +284,16 @@
     </div>
 </div>
 
+<!-- Modal: View Image -->
+<div id="imageModal" class="fixed inset-0 z-[60] hidden overflow-y-auto bg-black/90 backdrop-blur-sm animate-fade-in flex items-center justify-center p-4" onclick="closeImageModal()">
+    <div class="relative max-w-5xl w-full animate-zoom-in" onclick="event.stopPropagation()">
+        <button onclick="closeImageModal()" class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300 transition-colors">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modal_image_src" src="" class="w-full h-auto rounded-xl shadow-2xl border-4 border-white/10">
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     const tid = <?= json_encode($teacher_id); ?>;
@@ -344,9 +354,9 @@ $(document).ready(function() {
                 `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400">${item.hours} ชม. ${item.mn} น.</span>`,
                 `<span class="text-xs font-bold">${item.term}/${item.year}</span>`,
                 item.sdoc ? 
-                `<a href="../uploads/file_seminar/${item.sdoc}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all shadow-emerald-500/10">
+                `<div class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all shadow-emerald-500/10 cursor-pointer btn-view-image" data-img="../uploads/file_seminar/${item.sdoc}">
                     <img src="../uploads/file_seminar/${item.sdoc}" class="w-full h-12 object-cover border border-gray-100 dark:border-gray-700">
-                </a>` : 
+                </div>` : 
                 `<div class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-slate-800/50 py-2 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">no img</div>`,
                 `<div class="flex gap-2 justify-center">
                     <button class="w-8 h-8 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all flex items-center justify-center btn-view" data-id="${item.semid}"><i class="fas fa-eye text-xs"></i></button>
@@ -391,6 +401,11 @@ $(document).ready(function() {
         $('.btn-del').on('click', function() {
             const id = $(this).data('id');
             confirmDelete(id);
+        });
+
+        $('.btn-view-image').on('click', function() {
+            const src = $(this).data('img');
+            openImageModal(src);
         });
     }
 
@@ -524,6 +539,19 @@ $(document).ready(function() {
     window.closeViewModal = function() {
         $('#viewModal').addClass('hidden');
         $('body').removeClass('overflow-hidden');
+    }
+
+    window.openImageModal = function(src) {
+        $('#modal_image_src').attr('src', src);
+        $('#imageModal').removeClass('hidden').addClass('flex');
+        $('body').addClass('overflow-hidden');
+    }
+
+    window.closeImageModal = function() {
+        $('#imageModal').addClass('hidden').removeClass('flex');
+        if (!$('#trainingModal').is(':visible') && !$('#viewModal').is(':visible')) {
+            $('body').removeClass('overflow-hidden');
+        }
     }
 
     $('#addTraining').on('click', function() {
@@ -886,5 +914,14 @@ $(document).ready(function() {
     
     /* Icons */
     i { display: none !important; }
+}
+
+/* Animations */
+@keyframes zoom-in {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-zoom-in {
+    animation: zoom-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 </style>

@@ -47,7 +47,7 @@ if (isset($_FILES['sdoc']) && $_FILES['sdoc']['error'] == 0) {
 
     $randomString = substr(md5(rand()), 0, 5);
     $newFileName = $tid . '-' . $dstart . '-' . $randomString . '.' . $fileExtension;
-    $uploadDir = '../uploads/file_seminar/';
+    $uploadDir = '../../uploads/file_seminar/';
     $uploadFile = $uploadDir . $newFileName;
     if (move_uploaded_file($_FILES['sdoc']['tmp_name'], $uploadFile)) {
         $sdoc = $newFileName;

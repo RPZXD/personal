@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        $targetDir = $setting->getUploadDir_award();
+        $targetDir = "../../uploads/file_award/";
         $randomString = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6);
         $fileName = $tid . '_' . $date1 . '_' . $randomString . '.' . $fileExtension;
         $targetFilePath = $targetDir . $fileName;
