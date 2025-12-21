@@ -216,8 +216,8 @@ $(document).ready(function() {
                 `<span class="text-sm font-medium text-slate-700 dark:text-slate-300">${convertToThaiDate(item.date1)}</span>`,
                 `<span class="text-xs font-bold text-slate-600 dark:text-slate-400">${item.term}/${item.year}</span>`,
                 item.certificate ? 
-                `<a href="../teacher/uploads/file_award/${item.certificate}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-                    <img src="../teacher/uploads/file_award/${item.certificate}" class="w-full h-12 object-cover border border-gray-100 dark:border-gray-700" onerror="this.parentElement.style.display='none'">
+                `<a href="../uploads/file_award/${item.certificate}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
+                    <img src="../uploads/file_award/${item.certificate}" class="w-full h-12 object-cover border border-gray-100 dark:border-gray-700" onerror="this.parentElement.style.display='none'">
                 </a>` : 
                 `<div class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-slate-800/50 py-2 rounded-lg no-print">no img</div>`,
                 `<div class="no-print flex gap-2 justify-center">

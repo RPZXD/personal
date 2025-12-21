@@ -36,10 +36,10 @@
 
         <!-- Profile Menu -->
         <div class="relative group">
-            <button class="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+            <button class="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg -slate-700 transition-all">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-black shadow-lg shadow-primary-500/20">
                     <?php if(!empty($userData['Teach_photo'])): ?>
-                        <img src="../dist/img/person/<?php echo $userData['Teach_photo']; ?>" class="w-full h-full object-cover rounded-xl">
+                        <img src="https://std.phichai.ac.th/teacher/uploads/phototeach/<?php echo $userData['Teach_photo']; ?>" class="w-full h-full object-cover rounded-xl">
                     <?php else: ?>
                         <?php echo mb_substr($userData['Teach_name'] ?? 'O', 0, 1, 'UTF-8'); ?>
                     <?php endif; ?>
