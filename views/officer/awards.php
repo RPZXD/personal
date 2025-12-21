@@ -222,16 +222,17 @@
 </div>
 
 <!-- Modal: Image Preview -->
-<div id="imageModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-300">
+<div id="imageModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) closeImageModal()">
     <div class="absolute top-6 right-6 z-50">
         <button onclick="closeImageModal()" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all group">
             <i class="fas fa-times text-xl group-hover:rotate-90 transition-transform duration-300"></i>
         </button>
     </div>
-    <div class="relative w-full max-w-5xl p-4 animate-zoom-in">
-        <img id="modal_image_src" src="" class="w-auto max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-white/10">
+    <div class="relative w-full max-w-5xl p-4 animate-zoom-in" onclick="event.stopPropagation()">
+        <img id="modal_image_src" src="" class="w-auto max-w-full max-h-[85vh] mx-auto rounded-xl shadow-2xl border border-white/10" onerror="this.src='../dist/img/no-image.png'">
     </div>
 </div>
+
 
 <script>
 $(document).ready(function() {
@@ -391,13 +392,14 @@ $(document).ready(function() {
                             </div>
                             <div class="space-y-4">
                                 <h4 class="text-gray-900 dark:text-white text-xs font-black uppercase tracking-widest">เกียรติบัตร / หลักฐาน</h4>
-                                <div class="group relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-700 aspect-[4/3] bg-gray-100 dark:bg-slate-800">
+                                <div onclick="openImageModal('../uploads/file_award/${d.certificate}')" class="cursor-pointer group relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-700 aspect-[4/3] bg-gray-100 dark:bg-slate-800">
                                     <img src="../uploads/file_award/${d.certificate}" class="w-full h-full object-contain" onerror="this.src='../dist/img/no-image.png'">
-                                    <a href="../uploads/file_award/${d.certificate}" target="_blank" class="absolute inset-0 bg-indigo-600/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white scale-110 group-hover:scale-100">
-                                        <div class="px-6 py-2 rounded-full border-2 border-white font-bold backdrop-blur-sm">ดูรูปขนาดเต็ม</div>
-                                    </a>
+                                    <div class="absolute inset-0 bg-indigo-600/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white scale-110 group-hover:scale-100">
+                                        <div class="px-6 py-2 rounded-full border-2 border-white font-bold backdrop-blur-sm"><i class="fas fa-search-plus mr-2"></i>ดูรูปขนาดเต็ม</div>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     `;
                     $('#viewDetails').html(html);
@@ -484,6 +486,10 @@ $(document).ready(function() {
     }
 
     window.openImageModal = function(src) {
+        // Close viewModal if open to prevent stacking
+        if ($('#viewModal').is(':visible')) {
+            $('#viewModal').addClass('hidden');
+        }
         $('#modal_image_src').attr('src', src);
         $('#imageModal').removeClass('hidden').addClass('flex');
         $('body').addClass('overflow-hidden');
@@ -491,10 +497,14 @@ $(document).ready(function() {
 
     window.closeImageModal = function() {
         $('#imageModal').addClass('hidden').removeClass('flex');
-        if (!$('#awardModal').is(':visible') && !$('#viewModal').is(':visible')) {
+        // Re-add overflow-hidden if viewModal is still open
+        if ($('#awardModal').is(':visible') || $('#viewModal').is(':visible')) {
+            $('body').addClass('overflow-hidden');
+        } else {
             $('body').removeClass('overflow-hidden');
         }
     }
+
 
     $('#saveBtn').on('click', function() {
         const form = document.getElementById('awardForm');
