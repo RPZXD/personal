@@ -3,10 +3,10 @@
     class Database_User {
         private $host = "localhost:3306";
         private $db = "phichaia_student";
-        // private $username = "root";
-        // private $password = "";
-        private $username = "phichaia_rpz";
-        private $password = "r9u06D#e9";
+        private $username = "root";
+        private $password = "storage";
+        // private $username = "phichaia_rpz";
+        // private $password = "r9u06D#e9";
         public $conn;
 
         public function getConnection() {
@@ -27,10 +27,10 @@
     class Database_Person {
         private $host = "localhost:3306";
         private $db = "phichaia_person";
-        // private $username = "root";
-        // private $password = "";
-        private $username = "phichaia_rpz";
-        private $password = "r9u06D#e9";    
+        private $username = "root";
+        private $password = "storage";
+        // private $username = "phichaia_rpz";
+        // private $password = "r9u06D#e9";    
         public $conn;
 
         public function getConnection() {
