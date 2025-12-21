@@ -39,7 +39,7 @@
             <button class="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-black shadow-lg shadow-primary-500/20">
                     <?php if(!empty($userData['Teach_photo'])): ?>
-                        <img src="../dist/img/person/<?php echo $userData['Teach_photo']; ?>" class="w-full h-full object-cover rounded-xl">
+                        <img src="https://std.phichai.ac.th/teacher/uploads/phototeach/<?php echo $userData['Teach_photo']; ?>" class="w-full h-full object-cover rounded-xl">
                     <?php else: ?>
                         <?php echo mb_substr($userData['Teach_name'] ?? 'T', 0, 1, 'UTF-8'); ?>
                     <?php endif; ?>
@@ -54,9 +54,9 @@
             <!-- Dropdown -->
             <div class="absolute right-0 mt-3 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100">
                 <div class="p-2 rounded-3xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-100 dark:border-slate-800">
-                    <a href="index.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all">
-                        <i class="fas fa-user-shield text-primary-500"></i>
-                        <span class="text-sm font-bold">แผงควบคุม</span>
+                    <a href="data_teacher.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all">
+                        <i class="fas fa-user text-primary-500"></i>
+                        <span class="text-sm font-bold">ข้อมูลส่วนตัว</span>
                     </a>
                     <div class="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
                     <a href="../logout.php" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-900/20 text-rose-600 transition-all font-bold">

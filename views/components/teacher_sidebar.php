@@ -78,7 +78,7 @@ $menuItems = [
                         <div class="absolute inset-0 bg-gradient-to-tr from-primary-500 to-secondary-500 rounded-2xl blur opacity-30"></div>
                         <div class="relative w-12 h-12 rounded-2xl border border-white/10 overflow-hidden bg-slate-800 flex items-center justify-center">
                             <?php if(!empty($userData['Teach_photo'])): ?>
-                                <img src="../dist/img/person/<?php echo $userData['Teach_photo']; ?>" class="w-full h-full object-cover">
+                                <img src="https://std.phichai.ac.th/teacher/uploads/phototeach/<?php echo $userData['Teach_photo']; ?>" class="w-full h-full object-cover">
                             <?php else: ?>
                                 <span class="text-lg font-black text-white"><?php echo mb_substr($userData['Teach_name'] ?? 'U', 0, 1, 'UTF-8'); ?></span>
                             <?php endif; ?>
