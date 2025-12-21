@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $certificate = '';
 
     if (isset($_FILES['certificate']) && $_FILES['certificate']['error'] === UPLOAD_ERR_OK) {
-        $targetDir = "../teacher/file_award/";
+        $targetDir = "../uploads/file_award/";
         $fileName = basename($_FILES['certificate']['name']);
         $targetFilePath = $targetDir . $fileName;
         if (move_uploaded_file($_FILES['certificate']['tmp_name'], $targetFilePath)) {

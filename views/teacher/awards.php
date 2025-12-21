@@ -311,8 +311,8 @@ $(document).ready(function() {
                 `<span class="text-sm font-medium text-gray-600 dark:text-gray-400">${convertToThaiDate(item.date1)}</span>`,
                 `<span class="text-xs font-black text-indigo-600 dark:text-indigo-400">${item.term}/${item.year}</span>`,
                 item.certificate ? 
-                `<a href="../dist/img/award/${item.certificate}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700">
-                    <img src="../dist/img/award/${item.certificate}" class="w-full h-12 object-cover">
+                `<a href="../uploads/file_award/${item.certificate}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700">
+                    <img src="../uploads/file_award/${item.certificate}" class="w-full h-12 object-cover">
                 </a>` : 
                 `<div class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-slate-800/50 py-2 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">no img</div>`,
                 `<div class="flex gap-2 justify-center">
@@ -399,8 +399,8 @@ $(document).ready(function() {
                             <div class="space-y-4">
                                 <h4 class="text-gray-900 dark:text-white text-xs font-black uppercase tracking-widest">เกียรติบัตร / หลักฐาน</h4>
                                 <div class="group relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-700 aspect-[4/3] bg-gray-100 dark:bg-slate-800">
-                                    <img src="../dist/img/award/${d.certificate}" class="w-full h-full object-contain">
-                                    <a href="../dist/img/award/${d.certificate}" target="_blank" class="absolute inset-0 bg-indigo-600/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white scale-110 group-hover:scale-100">
+                                    <img src="../uploads/file_award/${d.certificate}" class="w-full h-full object-contain">
+                                    <a href="../uploads/file_award/${d.certificate}" target="_blank" class="absolute inset-0 bg-indigo-600/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white scale-110 group-hover:scale-100">
                                         <div class="px-6 py-2 rounded-full border-2 border-white font-bold backdrop-blur-sm">ดูรูปขนาดเต็ม</div>
                                     </a>
                                 </div>
@@ -434,7 +434,7 @@ $(document).ready(function() {
                     $('[name="department"]').val(d.department);
                     
                     if (d.certificate) {
-                        $('#file_preview').attr('src', '../dist/img/award/' + d.certificate);
+                        $('#file_preview').attr('src', '../uploads/file_award/' + d.certificate);
                         $('#preview_container').removeClass('hidden');
                     }
                     

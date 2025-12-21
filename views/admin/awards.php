@@ -252,7 +252,7 @@ $(document).ready(function() {
         data.forEach((row, idx) => {
             let certImg = '';
             // Using correct path based on Setting.php and testing
-            const basePath = 'https://person.phichai.ac.th/teacher/uploads/file_award/';
+            const basePath = 'uploads/file_award/';
             
             if (row.certificate) {
                 certImg = `<img src="${basePath}${row.certificate}" class="h-16 w-auto object-cover rounded-lg border border-gray-200 mx-auto cursor-pointer hover:scale-150 transition-transform" onclick="window.open(this.src)">`;

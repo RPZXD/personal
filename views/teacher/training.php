@@ -344,8 +344,8 @@ $(document).ready(function() {
                 `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400">${item.hours} ชม. ${item.mn} น.</span>`,
                 `<span class="text-xs font-bold">${item.term}/${item.year}</span>`,
                 item.sdoc ? 
-                `<a href="../dist/img/training/${item.sdoc}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all shadow-emerald-500/10">
-                    <img src="../dist/img/training/${item.sdoc}" class="w-full h-12 object-cover border border-gray-100 dark:border-gray-700">
+                `<a href="../uploads/file_seminar/${item.sdoc}" target="_blank" class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all shadow-emerald-500/10">
+                    <img src="../uploads/file_seminar/${item.sdoc}" class="w-full h-12 object-cover border border-gray-100 dark:border-gray-700">
                 </a>` : 
                 `<div class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-slate-800/50 py-2 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">no img</div>`,
                 `<div class="flex gap-2 justify-center">
@@ -431,8 +431,8 @@ $(document).ready(function() {
                         <div class="flex flex-col gap-4">
                             <h4 class="text-gray-900 dark:text-white text-sm font-black uppercase text-center md:text-left">เกียรติบัตร / หลักฐาน</h4>
                             <div class="group relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-700">
-                                <img src="../dist/img/training/${d.sdoc}" class="w-full object-contain max-h-[500px]">
-                                <a href="../dist/img/training/${d.sdoc}" target="_blank" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white">
+                                <img src="../uploads/file_seminar/${d.sdoc}" class="w-full object-contain max-h-[500px]">
+                                <a href="../uploads/file_seminar/${d.sdoc}" target="_blank" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white">
                                     <div class="px-6 py-2 rounded-full border-2 border-white font-bold">ดูรูปเต็ม</div>
                                 </a>
                             </div>
@@ -474,7 +474,7 @@ $(document).ready(function() {
                     $('[name="suggest"]').val(d.suggest);
                     
                     if (d.sdoc) {
-                        $('#file_preview').attr('src', '../dist/img/training/' + d.sdoc);
+                        $('#file_preview').attr('src', '../uploads/file_seminar/' + d.sdoc);
                         $('#preview_container').removeClass('hidden');
                     }
                     

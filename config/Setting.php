@@ -6,10 +6,8 @@ class Setting {
     private $pageTitleShort = "PERSONEL";
     private $logoImage = "/dist/img/logo-phicha.png";
     private $imgProfile = "https://std.phichai.ac.th/teacher/uploads/phototeach/";
-    private $imgAwards = "https://person.phichai.ac.th/teacher/uploads/file_award/";
-    // private $imgAwards = "uploads/file_award/";
-    private $imgTraining = "https://person.phichai.ac.th/teacher/uploads/file_seminar/";
-    // private $imgTraining = "uploads/seminar/";
+    private $imgAwards = "uploads/file_award/";
+    private $imgTraining = "uploads/file_seminar/";
     private $uploadDir_seminar = "../uploads/file_seminar/";
     private $uploadDir_award = "../uploads/file_award/";
     private $uploadDir_profile = "../../std.phichai.ac.th/teacher/uploads/phototeach/";

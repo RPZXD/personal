@@ -256,7 +256,7 @@ $(document).ready(function() {
             if (row.sdoc) {
                 // Assuming global variable or data attribute for image base path, or standard path
                 // Using generic check for now or path from original code
-                const basePath = 'https://person.phichai.ac.th/teacher/uploads/file_seminar/';
+                const basePath = 'uploads/file_seminar/';
                 certImg = `<img src="${basePath}${row.sdoc}" class="h-16 w-auto object-cover rounded-lg border border-gray-200 mx-auto cursor-pointer hover:scale-150 transition-transform" onclick="window.open(this.src)">`;
             } else {
                 certImg = '<span class="text-xs text-gray-400">-</span>';

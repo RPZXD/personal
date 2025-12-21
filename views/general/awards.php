@@ -148,8 +148,8 @@ $(document).ready(function() {
                 `<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black ${getLevelBadgeClass(item.level)}">${getAwardLevelText(item.level)}</span>`,
                 `<span class="text-xs font-black text-gray-900 dark:text-white">${item.term}/${item.year}</span>`,
                 item.certificate ? 
-                `<a href="teacher/uploads/file_award/${item.certificate}" target="_blank" class="block w-16 mx-auto rounded-lg overflow-hidden border border-gray-100 opacity-80 hover:opacity-100 transition-all">
-                    <img src="teacher/uploads/file_award/${item.certificate}" class="w-full h-10 object-cover">
+                `<a href="uploads/file_award/${item.certificate}" target="_blank" class="block w-16 mx-auto rounded-lg overflow-hidden border border-gray-100 opacity-80 hover:opacity-100 transition-all">
+                    <img src="uploads/file_award/${item.certificate}" class="w-full h-10 object-cover">
                 </a>` : 
                 `<span class="text-[10px] text-gray-300 italic">no proof</span>`
             ]);
