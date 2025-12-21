@@ -1,6 +1,9 @@
 <?php
 require_once "../../config/Database.php";
+header('Content-Type: application/json');
 require_once "../../class/Person.php";
+
+$response = array('success' => false, 'message' => '');
 
 // Initialize database connection
 $connectDB = new Database_Person();
@@ -11,8 +14,6 @@ $person = new Person($db);
 
 // Get parameters from request
 $id = isset($_POST['id']) ? $_POST['id'] : '';
-
-$response = array('success' => false, 'message' => '');
 
 if (!empty($id)) {
     try {

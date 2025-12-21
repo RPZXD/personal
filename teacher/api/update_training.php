@@ -1,7 +1,10 @@
 <?php
 require_once "../../config/Database.php";
+header('Content-Type: application/json');
 require_once "../../config/Setting.php";
 require_once "../../class/Person.php";
+
+$response = array('success' => false, 'message' => '');
 
 // Initialize database connection
 $connectDB = new Database_Person();
@@ -10,6 +13,7 @@ $db = $connectDB->getConnection();
 // Initialize Person class
 $person = new Person($db);
 $setting = new Setting();
+
 // Get parameters from request
 $id = isset($_POST['semid']) ? $_POST['semid'] : '';
 $tid = isset($_POST['tid']) ? $_POST['tid'] : '';
@@ -43,8 +47,6 @@ if (isset($_FILES['sdoc']) && $_FILES['sdoc']['error'] == 0) {
         exit;
     }
 }
-
-$response = array('success' => false, 'message' => '');
 
 if (!empty($id) && !empty($tid) && !empty($topic) && !empty($dstart) && !empty($dend) && !empty($term) && !empty($year)) {
     try {

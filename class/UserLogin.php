@@ -79,6 +79,9 @@ class UserLogin {
     
 
     public function userData($userid) {
+        if (is_array($userid)) {
+            $userid = $userid['Teach_id'] ?? '';
+        }
         $query = "SELECT * FROM {$this->table_name} WHERE Teach_id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $userid);

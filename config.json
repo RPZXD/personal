@@ -1,0 +1,19 @@
+{
+    "global": {
+        "pageTitle": "ระบบจัดการข้อมูลบุคลากร",
+        "nameschool": "โรงเรียนพิชัย",
+        "nameTitle": "PERSONNEL",
+        "footerCredit": "by ICT @Phichai school. พัฒนาระบบโดย นายทิวา เรืองศรี ทีมงาน ICT โรงเรียนพิชัย",
+        "logoLink": "logo-phicha.png",
+        "address": "",
+        "phone": "",
+        "email": "",
+        "imgProfile": "https://std.phichai.ac.th/teacher/uploads/phototeach/",
+        "imgAwards": "https://person.phichai.ac.th/teacher/uploads/file_award/",
+        "imgTraining": "https://person.phichai.ac.th/teacher/uploads/file_seminar/"
+    },
+    "system": {
+        "version": "2.0",
+        "debug": false
+    }
+}

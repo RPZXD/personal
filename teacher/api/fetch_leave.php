@@ -1,6 +1,9 @@
 <?php
 require_once "../../config/Database.php";
+header('Content-Type: application/json');
 require_once "../../class/Person.php";
+
+$response = array('success' => false, 'data' => array(), 'message' => '');
 
 // Initialize database connection
 $connectDB = new Database_Person();
@@ -13,8 +16,6 @@ $person = new Person($db);
 $tid = isset($_GET['tid']) ? $_GET['tid'] : '';
 $date_start = isset($_GET['date_start']) ? $_GET['date_start'] : '';
 $date_end = isset($_GET['date_end']) ? $_GET['date_end'] : '';
-
-$response = array('success' => false, 'data' => array(), 'message' => '');
 
 if (!empty($tid)) {
     try {

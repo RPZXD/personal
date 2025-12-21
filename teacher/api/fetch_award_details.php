@@ -1,24 +1,36 @@
 <?php
+require_once "../../config/Database.php";
+header('Content-Type: application/json');
+require_once "../../class/Person.php";
 
-include_once("../../config/Database.php");
-include_once("../../class/Person.php");
+$response = array('success' => false, 'details' => array(), 'message' => '');
 
-$database = new Database_Person();
-$db = $database->getConnection();
+// Initialize database connection
+$connectDB = new Database_Person();
+$db = $connectDB->getConnection();
 
+// Initialize Person class
 $person = new Person($db);
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $id = $_GET['id'];
+// Get parameters from request
+$id = isset($_GET['id']) ? $_GET['id'] : '';
 
-    $awardDetails = $person->getAwardDetailsById($id);
+if (!empty($id)) {
+    try {
+        $details = $person->getAwardDetailsById($id);
 
-    if ($awardDetails) {
-        echo json_encode(['success' => true, 'details' => $awardDetails]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'ไม่พบรายละเอียดรางวัล']);
+        if ($details) {
+            $response['success'] = true;
+            $response['details'] = $details;
+        } else {
+            $response['message'] = 'ไม่พบรายละเอียดรางวัลสำหรับรหัสที่กำหนด';
+        }
+    } catch (Exception $e) {
+        $response['message'] = 'ข้อผิดพลาด: ' . $e->getMessage();
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'วิธีการร้องขอไม่ถูกต้อง']);
+    $response['message'] = 'จำเป็นต้องมีรหัสรางวัล';
 }
+
+echo json_encode($response);
 ?>

@@ -1,20 +1,21 @@
 <?php
 require_once "../../config/Database.php";
+header('Content-Type: application/json');
 require_once "../../class/Person.php";
+
+$response = array('success' => false, 'data' => array(), 'message' => '');
 
 // Initialize database connection
 $connectDB = new Database_Person();
 $db = $connectDB->getConnection();
 
-// Initialize Homeroom class
+// Initialize Person class
 $person = new Person($db);
 
 // Get parameters from request
 $tid = isset($_GET['tid']) ? $_GET['tid'] : '';
 $term = isset($_GET['term']) && $_GET['term'] !== 'all' ? $_GET['term'] : '';
 $year = isset($_GET['year']) && $_GET['year'] !== 'all' ? $_GET['year'] : '';
-
-$response = array('success' => false, 'data' => array(), 'message' => '');
 
 if (!empty($tid)) {
     try {

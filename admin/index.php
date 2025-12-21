@@ -2,7 +2,6 @@
 
 session_start();
 
-
 include_once("../config/Database.php");
 include_once("../class/UserLogin.php");
 include_once("../class/Utils.php");
@@ -31,48 +30,7 @@ if (isset($_SESSION['Admin_login'])) {
     exit;
 }
 
-require_once('header.php');
-
-
+$pageTitle = 'หน้าหลักผู้ดูแลระบบ';
+$view = '../views/admin/dashboard.php';
+require '../views/layouts/admin_app.php';
 ?>
-<body class="hold-transition sidebar-mini layout-fixed light-mode">
-<div class="wrapper">
-
-    <?php require_once('wrapper.php');?>
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-
-  <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0"></h1>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
-    <section class="content">
-
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="callout callout-success text-center">
-                        <h4 class="text-green-600">ยินดีต้อนรับคุณครู <?php echo $userData['Teach_name'] ?> เข้าสู่ระบบบริหารทั่วไป | โรงเรียนพิชัย</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-    <?php require_once('../footer.php');?>
-</div>
-<!-- ./wrapper -->
-
-<?php require_once('script.php');?>
-</body>
-</html>

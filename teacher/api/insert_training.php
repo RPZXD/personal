@@ -1,7 +1,10 @@
 <?php
 require_once "../../config/Database.php";
+header('Content-Type: application/json');
 require_once "../../config/Setting.php";
 require_once "../../class/Person.php";
+
+$response = array('success' => false, 'message' => '');
 
 // Initialize database connection
 $connectDB = new Database_Person();
@@ -10,11 +13,13 @@ $db = $connectDB->getConnection();
 // Initialize Person class
 $person = new Person($db);
 $setting = new Setting();
+
 // Get parameters from request
 $tid = isset($_POST['tid']) ? $_POST['tid'] : '';
 $topic = isset($_POST['topic']) ? $_POST['topic'] : '';
 $dstart = isset($_POST['dstart']) ? $_POST['dstart'] : '';
 $dend = isset($_POST['dend']) ? $_POST['dend'] : '';
+
 // Adjust year if greater than 3000
 if (intval(substr($dstart, 0, 4)) > 2500) {
     $dstart = (intval(substr($dstart, 0, 4)) - 543) . substr($dstart, 4);
@@ -22,6 +27,7 @@ if (intval(substr($dstart, 0, 4)) > 2500) {
 if (intval(substr($dend, 0, 4)) > 2500) {
     $dend = (intval(substr($dend, 0, 4)) - 543) . substr($dend, 4);
 }
+
 $term = isset($_POST['term']) ? $_POST['term'] : '';
 $year = isset($_POST['year']) ? $_POST['year'] : '';
 $supports = isset($_POST['supports']) ? $_POST['supports'] : '';
@@ -58,8 +64,6 @@ if (isset($_FILES['sdoc']) && $_FILES['sdoc']['error'] == 0) {
         exit;
     }
 }
-
-$response = array('success' => false, 'message' => '');
 
 if (!empty($tid) && !empty($topic) && !empty($dstart) && !empty($dend) && !empty($term) && !empty($year)) {
     try {

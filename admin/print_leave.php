@@ -47,7 +47,9 @@ $userData = $user->userData($teacher_id);
 $position = $person->getPositionById($userData['Teach_Position']);
 $academic = $person->getAcademicById($userData['Teach_Academic']);
 
-if (isset($_SESSION['Officer_login'])) {
+if (isset($_SESSION['Admin_login'])) {
+    $userid = $_SESSION['Admin_login'];
+} elseif (isset($_SESSION['Officer_login'])) {
     $userid = $_SESSION['Officer_login'];
 } else {
     $sw2 = new SweetAlert2(

@@ -475,16 +475,20 @@ class Person {
 
     public function updateLeaveDetails($data) {
         $query = "UPDATE {$this->table_leave} SET 
+                    Teach_id = :tid,
                     status = :status,
                     date_start = :date_start,
                     date_end = :date_end,
-                    detail = :detail
+                    detail = :detail,
+                    other_leave_type = :other_leave_type
                   WHERE id = :id";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':tid', $data['tid']);
         $stmt->bindParam(':status', $data['status']);
         $stmt->bindParam(':date_start', $data['date_start']);
         $stmt->bindParam(':date_end', $data['date_end']);
         $stmt->bindParam(':detail', $data['detail']);
+        $stmt->bindParam(':other_leave_type', $data['other_leave_type']);
         $stmt->bindParam(':id', $data['id']);
         return $stmt->execute();
     }
@@ -610,5 +614,43 @@ class Person {
         return $stmt->fetchColumn() > 0;
     }
 
+    public function getDashboardStats($tid, $year) {
+        // Training stats
+        $query_training = "SELECT 
+                            SUM(hours + (mn / 60)) as total_hours,
+                            COUNT(*) as total_trainings,
+                            SUM(budget) as total_budget
+                           FROM {$this->table_seminar} 
+                           WHERE tid = :tid AND year = :year";
+        $stmt_t = $this->conn->prepare($query_training);
+        $stmt_t->execute([':tid' => $tid, ':year' => $year]);
+        $training = $stmt_t->fetch(PDO::FETCH_ASSOC);
+
+        // Awards stats
+        $query_awards = "SELECT COUNT(*) as count FROM {$this->table_award} WHERE tid = :tid AND year = :year";
+        $stmt_a = $this->conn->prepare($query_awards);
+        $stmt_a->execute([':tid' => $tid, ':year' => $year]);
+        $awards = $stmt_a->fetch(PDO::FETCH_ASSOC)['count'];
+
+        // Leave stats
+        $query_leave = "SELECT 
+                            SUM(CASE WHEN status = '1' THEN (DATEDIFF(date_end, date_start) + 1) ELSE 0 END) as sick_days,
+                            SUM(CASE WHEN status = '2' THEN (DATEDIFF(date_end, date_start) + 1) ELSE 0 END) as personal_days,
+                            SUM(DATEDIFF(date_end, date_start) + 1) as total_days
+                         FROM {$this->table_leave} 
+                         WHERE Teach_id = :tid 
+                         AND (YEAR(date_start) = :year_eng OR YEAR(date_end) = :year_eng)";
+        
+        // Convert Thai year to Gregorian for DATE functions
+        $year_eng = intval($year) - 543;
+        $stmt_l = $this->conn->prepare($query_leave);
+        $stmt_l->execute([':tid' => $tid, ':year_eng' => $year_eng]);
+        $leave = $stmt_l->fetch(PDO::FETCH_ASSOC);
+
+        return [
+            'training' => $training,
+            'awards' => $awards,
+            'leave' => $leave
+        ];
+    }
 }
-?>

@@ -1,24 +1,35 @@
 <?php
+require_once "../../config/Database.php";
+header('Content-Type: application/json');
+require_once "../../class/Person.php";
 
-include_once("../../config/Database.php");
-include_once("../../class/Person.php");
+$response = array('success' => false, 'message' => '');
 
-$database = new Database_Person();
-$db = $database->getConnection();
+// Initialize database connection
+$connectDB = new Database_Person();
+$db = $connectDB->getConnection();
 
+// Initialize Person class
 $person = new Person($db);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = $_POST['id'];
+// Get parameters from request
+$id = isset($_POST['id']) ? $_POST['id'] : '';
 
-    $result = $person->deleteAwardById($id);
-
-    if ($result) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'ไม่สามารถลบรางวัลได้']);
+if (!empty($id)) {
+    try {
+        $result = $person->deleteAwardById($id);
+        if ($result) {
+            $response['success'] = true;
+            $response['message'] = 'ลบรายละเอียดรางวัลเรียบร้อยแล้ว';
+        } else {
+            $response['message'] = 'ไม่สามารถลบรายละเอียดรางวัลได้';
+        }
+    } catch (Exception $e) {
+        $response['message'] = 'ข้อผิดพลาด: ' . $e->getMessage();
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'วิธีการร้องขอไม่ถูกต้อง']);
+    $response['message'] = 'จำเป็นต้องกรอกข้อมูลที่จำเป็น';
 }
+
+echo json_encode($response);
 ?>

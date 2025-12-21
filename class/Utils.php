@@ -48,6 +48,7 @@
 
     class Utils {
         public static function convertToThaiDate($date) {
+            if (empty($date) || $date == '0000-00-00') return "ไม่ระบุ";
             $months = [
                 "01" => "มกราคม", "02" => "กุมภาพันธ์", "03" => "มีนาคม",
                 "04" => "เมษายน", "05" => "พฤษภาคม", "06" => "มิถุนายน",
@@ -56,10 +57,11 @@
             ];
     
             $year = substr($date, 0, 4);
-            $month = $months[substr($date, 5, 2)];
+            $month_idx = substr($date, 5, 2);
+            $month = isset($months[$month_idx]) ? $months[$month_idx] : "ไม่ระบุ";
             $day = (int)substr($date, 8, 2);
     
-            return "{$day} {$month} {$year}";
+            return "{$day} {$month} " . ($year > 2500 ? $year : $year + 543);
         }
 
         public static function convertToThaiDatePlus($date) {

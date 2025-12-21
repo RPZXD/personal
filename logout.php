@@ -1,18 +1,9 @@
-<?php 
-
-    include_once("config/Database.php");
-    include_once("class/UserLogin.php");
-    require_once("header.php");
-    require_once("script.php");
-
-    // Start session if not already started
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
-
-    $connectDB = new Database_User();
-    $db = $connectDB->getConnection();
-
-    $user = new UserLogin($db);
-    $user->logOut();
-?>
+<?php
+/**
+ * Logout - Clear all session data
+ */
+session_start();
+session_unset();
+session_destroy();
+header("Location: login.php?logout=1");
+exit();
