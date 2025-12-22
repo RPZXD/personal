@@ -1,7 +1,7 @@
 <?php
 // Include the database connection and user class file
-require_once '../../config/Database.php'; // Adjust this path according to your setup
-require_once '../../class/Teacher.php'; // This file contains the User class
+require_once '../../config/Database.php';
+require_once '../../class/Teacher.php';
 
 // Create an instance of Database_User
 $database = new Database_User();
@@ -27,11 +27,14 @@ try {
     // Create an instance of the User class
     $user = new Teacher($db);
 
-    // Fetch teacher details by teacher ID
-    $teachers = $user->getTeacherById($teach_id);
+    // Fetch teacher details by teacher ID (without status filter for admin use)
+    $teachers = $user->getTeacherById2($teach_id);
 
     if (!empty($teachers)) {
-        $teacherDetails = $teachers[0]; // Assuming getTeacherById returns an array
+        $teacherDetails = $teachers[0];
+        // Keep Teach_password for admin to see current password
+        // Remove only the hashed password column for security
+        unset($teacherDetails['Teach_password']);
         // Send JSON response
         header('Content-Type: application/json');
         echo json_encode($teacherDetails);
@@ -44,3 +47,4 @@ try {
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
 ?>
+
