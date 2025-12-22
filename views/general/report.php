@@ -364,11 +364,56 @@ $(document).ready(function() {
 
 <style>
 @media print {
-    body { background: white !important; }
-    .animate-fade-in > div:not(#print_report), nav, #sidebar, button, select, .swal2-container {
+    body { 
+        background: white !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+    }
+    
+    /* Hide non-essential elements */
+    nav, #sidebar, #navbar, aside, footer, button, select, .swal2-container, .no-print,
+    .space-y-8 > div:first-child,
+    .space-y-8 > .grid,
+    .space-y-8 > .flex.justify-center {
         display: none !important;
     }
-    #print_report { display: block !important; position: static; width: 100%; color: black !important; }
-    @page { size: portrait; margin: 1.5cm; }
+    
+    /* IMPORTANT: Show print report section - must override hidden class */
+    #print_report, 
+    #print_report.hidden { 
+        display: block !important; 
+        visibility: visible !important;
+        position: static !important; 
+        width: 100% !important; 
+    }
+    
+    /* Fix layout */
+    .content-wrapper, main, .lg\:ml-64 { 
+        margin: 0 !important; 
+        padding: 0 !important; 
+        margin-left: 0 !important;
+    }
+    
+    /* Ensure black text for print report */
+    #print_report, #print_report * { 
+        color: black !important; 
+        background: white !important;
+    }
+    #print_report table { 
+        border-collapse: collapse !important; 
+        width: 100% !important;
+    }
+    #print_report th, #print_report td { 
+        border: 2px solid black !important; 
+        padding: 12px !important;
+    }
+    #print_report thead { 
+        background: #f0f0f0 !important; 
+    }
+    #print_report img {
+        display: block !important;
+    }
+    
+    @page { size: A4 portrait; margin: 1.5cm; }
 }
 </style>
