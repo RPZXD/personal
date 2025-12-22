@@ -91,8 +91,8 @@
                 </label>
                 <select id="select_year" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none transition-all">
                     <option value="">ทั้งหมด</option>
-                    <?php foreach ($years as $year): ?>
-                        <option value="<?= $year['year'] ?>" <?= $year['year'] == $pee ? 'selected' : '' ?>><?= $year['year'] ?></option>
+                    <?php foreach ($years as $index => $year): ?>
+                        <option value="<?= $year['year'] ?>" <?= $index === 0 ? 'selected' : '' ?>><?= $year['year'] ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

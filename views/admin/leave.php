@@ -1,23 +1,23 @@
-<!-- Admin Leave Management View -->
+<!-- Admin Leave View -->
 <div class="space-y-6 animate-fade-in">
     <!-- Header Section -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-6 md:p-8 shadow-2xl text-white">
+    <div class="no-print relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-500 to-orange-600 p-6 md:p-8 shadow-2xl text-white">
         <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
         <div class="relative flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
                 <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl md:text-4xl shadow-inner border border-white/30 shrink-0">
-                    <i class="fas fa-calendar-check"></i>
+                    📅
                 </div>
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-black tracking-tight leading-tight">ระบบจัดการการลา</h2>
-                    <p class="text-emerald-100/80 mt-1 font-medium italic text-xs md:text-base">
-                        ตรวจสอบและพิมพ์รายงานการลาของบุคลากร
+                    <h2 class="text-2xl md:text-3xl font-black tracking-tight leading-tight">ระบบการลาบุคลากร</h2>
+                    <p class="text-rose-100/80 mt-1 font-medium italic text-xs md:text-base">
+                        <span id="selected_teacher_display">ทังหมด</span> | <span id="selected_date_display">ทั้งหมด</span>
                     </p>
                 </div>
             </div>
             <div class="flex flex-wrap justify-center gap-3 w-full md:w-auto">
-                <button onclick="openAddModal()" class="flex-1 md:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-2xl bg-white text-emerald-600 text-sm md:text-base font-bold hover:bg-emerald-50 transition-all shadow-lg flex items-center justify-center gap-2">
-                    <i class="fas fa-plus"></i> เพิ่มการแจ้งลา
+                <button id="addLeave" class="flex-1 md:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-2xl bg-white text-rose-600 text-sm md:text-base font-bold hover:bg-rose-50 transition-all shadow-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-plus-circle"></i> เพิ่มการแจ้งลา
                 </button>
                 <button onclick="printPage()" class="flex-1 md:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-2xl bg-white/20 backdrop-blur text-white text-sm md:text-base font-bold hover:bg-white/30 transition-all border border-white/30 flex items-center justify-center gap-2">
                     <i class="fas fa-print"></i> พิมพ์รายงาน
@@ -26,196 +26,149 @@
         </div>
     </div>
 
-    <!-- Filters Section -->
-    <div class="glass-morphism rounded-3xl p-6 border border-white/20 shadow-xl space-y-6">
-        <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/10">
-            <div class="inline-flex rounded-xl p-1 bg-white/50 dark:bg-slate-800/50 backdrop-blur shadow-inner w-full md:w-auto overflow-x-auto no-scrollbar">
-                <button onclick="setQuickRange('range1')" class="range-btn whitespace-nowrap px-4 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white dark:hover:bg-slate-700" id="range1Btn">ครึ่งปีแรก (1 เม.ย. - 30 ก.ย.)</button>
-                <button onclick="setQuickRange('range2')" class="range-btn whitespace-nowrap px-4 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white dark:hover:bg-slate-700" id="range2Btn">ครึ่งปีหลัง (1 ต.ค. - 31 มี.ค.)</button>
-                <button onclick="setQuickRange('custom')" class="range-btn whitespace-nowrap px-4 py-2 rounded-lg text-xs font-bold transition-all hover:bg-white dark:hover:bg-slate-700" id="customRangeBtn">กำหนดเอง</button>
-            </div>
-            
-            <div class="flex gap-2 w-full md:w-auto">
-                <button id="filterBtn" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all">ค้นหา</button>
-                <button id="resetBtn" class="px-6 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs uppercase tracking-widest hover:bg-slate-300 transition-all">ล้างค่า</button>
-            </div>
+    <!-- Formal Header for Print (Hidden in screen) -->
+    <div id="print_header" class="hidden print:block text-center space-y-4 mb-8">
+        <div class="flex justify-center mb-2">
+            <img src="../dist/img/logo-phicha.png" alt="Logo" class="w-24 h-24">
         </div>
+        <h2 class="text-2xl font-bold text-slate-900 border-b-2 border-slate-900 pb-2 inline-block">รายงานข้อมูลการลาของบุคลากร</h2>
+        <div class="text-lg text-slate-700 font-semibold space-y-1">
+            <p>ชื่อ-นามสกุล: <span id="selected_teacher_print">-</span></p>
+            <p>ข้อมูลประจำช่วงวันที่ <span id="selected_date_print">-</span></p>
+        </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <!-- Card 1: Total -->
+        <div class="glass-morphism rounded-2xl p-4 border border-blue-500/10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">รวมวันลา</p>
+            <h3 id="card_total_leave_days" class="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">-</h3>
+        </div>
+        <!-- Card 2: Sick -->
+        <div class="glass-morphism rounded-2xl p-4 border border-rose-500/10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ลาป่วย</p>
+            <h3 id="card_total_sick_leave_days" class="text-2xl font-black text-rose-500 mt-1">-</h3>
+        </div>
+        <!-- Card 3: Personal -->
+        <div class="glass-morphism rounded-2xl p-4 border border-amber-500/10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ลากิจ</p>
+            <h3 id="card_total_personal_leave_days" class="text-2xl font-black text-amber-500 mt-1">-</h3>
+        </div>
+        <!-- Card 4: Official -->
+        <div class="glass-morphism rounded-2xl p-4 border border-emerald-500/10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ไปราชการ</p>
+            <h3 id="card_total_official_leave_days" class="text-2xl font-black text-emerald-500 mt-1">-</h3>
+        </div>
+        <!-- Card 5: Other -->
+        <div class="glass-morphism rounded-2xl p-4 border border-gray-500/10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ลาอื่นๆ</p>
+            <h3 id="card_total_other_leave_days" class="text-2xl font-black text-gray-600 dark:text-gray-400 mt-1">-</h3>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="glass-morphism rounded-3xl p-6 no-print">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">กลุ่มสาระ</label>
-                <select id="select_department" class="w-full px-4 py-3 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm">
-                    <option value="">เลือกกลุ่ม</option>
-                    <?php foreach ($majors as $major): ?>
-                        <option value="<?= $major['Teach_major'] ?>"><?= $major['Teach_major'] ?></option>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">กลุ่มสาระ</label>
+                <select id="select_department" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all">
+                    <option value="">ทั้งหมด</option>
+                    <?php foreach ($majors as $m): ?>
+                        <option value="<?= $m['Teach_major'] ?>"><?= $m['Teach_major'] ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">เลือกครู</label>
-                <select id="select_teacher" class="w-full px-4 py-3 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">เลือกครู</label>
+                <select id="select_teacher" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all">
                     <option value="">เลือกครู</option>
                 </select>
             </div>
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">วันที่เริ่มต้น</label>
-                <input type="date" id="select_date_start" class="w-full px-4 py-3 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">วันที่เริ่มต้น</label>
+                <input type="date" id="select_date_start" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all">
             </div>
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">วันที่สิ้นสุด</label>
-                <input type="date" id="select_date_end" class="w-full px-4 py-3 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-sm">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">วันที่สิ้นสุด</label>
+                <input type="date" id="select_date_end" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 outline-none transition-all">
             </div>
-        </div>
-    </div>
-
-    <!-- Summary Stats Section -->
-    <div id="statsSection" class="grid grid-cols-2 md:grid-cols-5 gap-4 hidden animate-fade-in">
-        <div class="glass-morphism rounded-2xl p-4 border border-white/20 text-center">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">รวมวันลาทั้งหมด</p>
-            <p id="total_leave_days" class="text-2xl font-black text-slate-800 dark:text-white">-</p>
-        </div>
-        <div class="glass-morphism rounded-2xl p-4 border border-white/20 text-center border-l-4 border-l-rose-500">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">ลาป่วย</p>
-            <p id="total_sick_leave_days" class="text-2xl font-black text-rose-600">-</p>
-        </div>
-        <div class="glass-morphism rounded-2xl p-4 border border-white/20 text-center border-l-4 border-l-amber-500">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">ลากิจ</p>
-            <p id="total_personal_leave_days" class="text-2xl font-black text-amber-600">-</p>
-        </div>
-        <div class="glass-morphism rounded-2xl p-4 border border-white/20 text-center border-l-4 border-l-sky-500">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">ไปราชการ</p>
-            <p id="total_official_leave_days" class="text-2xl font-black text-sky-600">-</p>
-        </div>
-        <div class="glass-morphism rounded-2xl p-4 border border-white/20 text-center border-l-4 border-l-slate-500">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">ลาอื่นๆ</p>
-            <p id="total_other_leave_days" class="text-2xl font-black text-slate-600">-</p>
+            <div class="sm:col-span-2 lg:col-span-4 flex justify-end gap-3 pt-2">
+                <button id="reset" class="px-8 py-3 rounded-2xl bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 font-bold hover:bg-gray-200 transition-all">
+                    ล้างค่า
+                </button>
+                <button id="filter" class="px-8 py-3 rounded-2xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-all shadow-lg">
+                    ค้นหา
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Table Section -->
     <div class="glass-morphism rounded-3xl p-6 overflow-hidden border border-white/20 shadow-xl">
-        <div class="mb-6 flex justify-between items-center">
-            <div id="printHeaderInfo" class="hidden">
-                 <h4 class="text-lg font-black text-slate-800">รายงานการลา: <span id="display_name" class="text-emerald-600"></span></h4>
-                 <p class="text-sm text-slate-500">กลุ่มสาระ: <span id="display_dept"></span></p>
-            </div>
-        </div>
         <div class="table-responsive">
             <table class="w-full text-left" id="record_table">
                 <thead>
                     <tr class="bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-gray-700">
-                        <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">#</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">ประเภทการลา</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">เริ่มต้น</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">สิ้นสุด</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">จำนวนวัน</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">เหตุผล</th>
-                        <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center no-print">จัดการ</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">#</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">ประเภทการลา</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">วันที่เริ่มต้น</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">วันที่สิ้นสุด</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">รวม (วัน)</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">เหตุผล/รายละเอียด</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">จัดการ</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700/50">
+                    <!-- Loaded by AJAX -->
                 </tbody>
             </table>
         </div>
     </div>
-
-    <!-- Modal: Add Leave -->
-    <div id="addModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/40 backdrop-blur-sm animate-fade-in">
+    <!-- Modal: Add/Edit Leave -->
+    <div id="leaveModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/40 backdrop-blur-sm animate-fade-in">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="glass-morphism rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-slide-up bg-white dark:bg-slate-900 border border-white/20">
-                <div class="p-6 bg-gradient-to-r from-emerald-600 to-teal-600 flex justify-between items-center text-white">
-                    <h3 class="text-xl font-black tracking-tight flex items-center gap-2">
-                        <i class="fas fa-plus"></i>
-                        แจ้งการลาใหม่
+                <div class="p-6 bg-gradient-to-r from-rose-600 to-orange-600 flex justify-between items-center text-white">
+                    <h3 id="modalTitle" class="text-xl font-black tracking-tight flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i>
+                        เพิ่มการแจ้งลา / ไปราชการ
                     </h3>
-                    <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+                    <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                
-                <form id="addForm" class="p-8 space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">กลุ่มสาระ</label>
-                            <select name="department" id="addDepartment" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold">
-                                <option value="">เลือกกลุ่ม</option>
-                                <?php foreach ($majors as $major): ?>
-                                    <option value="<?= $major['Teach_major'] ?>"><?= $major['Teach_major'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">เลือกครู</label>
-                            <select name="teacher" id="addTeacher" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold">
-                                <option value="">เลือกครู</option>
-                            </select>
-                        </div>
-
-                        <div class="md:col-span-2 space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ประเภทการลา</label>
-                            <select name="status" id="addStatus" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold text-center">
-                                <option value="">-- โปรดเลือกประเภทการลา --</option>
-                                <option value="1">ลาป่วย</option>
-                                <option value="2">ลากิจ</option>
-                                <option value="3">ไปราชการ</option>
-                                <option value="4">ลาคลอด</option>
-                                <option value="9">อื่นๆ</option>
-                            </select>
-                        </div>
-
-                        <div id="otherLeaveTypeGroup" class="md:col-span-2 space-y-2 hidden">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ระบุประเภทการลาอื่นๆ</label>
-                            <input type="text" name="other_leave_type" id="otherLeaveType" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold">
-                        </div>
-
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">วันที่เริ่มต้น</label>
-                            <input type="date" name="date_start" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">วันที่สิ้นสุด</label>
-                            <input type="date" name="date_end" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold">
-                        </div>
-
-                        <div class="md:col-span-2 space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">เหตุผล / รายละเอียด</label>
-                            <textarea name="detail" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition-all font-bold min-h-[100px]"></textarea>
-                        </div>
-                    </div>
-                </form>
-                
-                <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
-                    <button onclick="closeAddModal()" class="px-6 py-2.5 rounded-2xl bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 transition-all">ยกเลิก</button>
-                    <button id="saveAdd" class="px-8 py-2.5 rounded-2xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-all shadow-lg flex items-center gap-2">
-                        <i class="fas fa-save"></i> บันทึกข้อมูล
-                    </button>
+                <div class="p-4 bg-rose-50 dark:bg-rose-500/10 border-b border-rose-100 dark:border-rose-500/20">
+                    <p class="text-xs text-rose-700 dark:text-rose-400 font-bold flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle"></i> ข้อมูลนี้จะถูกบันทึกเพื่อใช้สำหรับจัดพิมพ์ใบลาในภายหลัง
+                    </p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Edit Leave -->
-    <div id="editModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/40 backdrop-blur-sm animate-fade-in">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="glass-morphism rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-slide-up bg-white dark:bg-slate-900 border border-white/20">
-                <div class="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 flex justify-between items-center text-white">
-                    <h3 class="text-xl font-black tracking-tight flex items-center gap-2">
-                        <i class="fas fa-edit"></i>
-                        แก้ไขข้อมูลการลา
-                    </h3>
-                    <button onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <form id="editForm" class="p-8 space-y-6">
-                    <input type="hidden" name="id" id="editLeaveId">
-                    <input type="hidden" name="tid" id="editTeacherId">
+                <form id="leaveForm" class="p-8 space-y-6">
+                    <input type="hidden" name="id" id="editId">
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2 space-y-2">
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">กลุ่มสาระ</label>
+                                <select id="modalDept" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-rose-500 outline-none">
+                                    <option value="">ทั้งหมด</option>
+                                    <?php foreach ($majors as $m): ?>
+                                        <option value="<?= $m['Teach_major'] ?>"><?= $m['Teach_major'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ชื่อบุคลากร</label>
+                                <select name="teacher" id="modalTeacher" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-rose-500 outline-none">
+                                    <option value="">เลือกครู</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
                             <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ประเภทการลา</label>
-                            <select name="status" id="editStatus" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-center">
+                            <select name="status" id="addStatus" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-rose-500 outline-none">
+                                <option value="">เลือกประเภทการลา</option>
                                 <option value="1">ลาป่วย</option>
                                 <option value="2">ลากิจ</option>
                                 <option value="3">ไปราชการ</option>
@@ -224,31 +177,35 @@
                             </select>
                         </div>
 
-                        <div id="editOtherLeaveTypeGroup" class="md:col-span-2 space-y-2 hidden">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ระบุประเภทการลาอื่นๆ</label>
-                            <input type="text" name="other_leave_type" id="editOtherLeaveType" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold">
+                        <div id="otherLeaveTypeGroup" class="hidden space-y-2">
+                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">ระบุประเภทการลา</label>
+                            <input type="text" name="other_leave_type" id="other_leave_type" placeholder="เช่น ลาอุปสมบท, ลาศึกษาต่อ" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 outline-none focus:ring-2 focus:ring-rose-500">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">วันที่เริ่มต้น</label>
+                                <input type="date" name="date_start" id="date_start" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-rose-500 outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">วันที่สิ้นสุด</label>
+                                <input type="date" name="date_end" id="date_end" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-rose-500 outline-none">
+                            </div>
                         </div>
 
                         <div class="space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">วันที่เริ่มต้น</label>
-                            <input type="date" name="date_start" id="editStartDate" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">วันที่สิ้นสุด</label>
-                            <input type="date" name="date_end" id="editEndDate" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold">
-                        </div>
-
-                        <div class="md:col-span-2 space-y-2">
-                            <label class="text-sm font-black text-gray-700 dark:text-gray-300 ml-1 uppercase">เหตุผล / รายละเอียด</label>
-                            <textarea name="detail" id="editDetail" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold min-h-[100px]"></textarea>
+                            <div class="flex justify-between items-center ml-1">
+                                <label class="text-sm font-black text-gray-700 dark:text-gray-300 uppercase">เหตุผลการลา</label>
+                                <span id="charCount" class="text-[10px] font-bold text-gray-400">0 / 100</span>
+                            </div>
+                            <textarea name="detail" id="detail" required maxlength="100" rows="3" class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800 focus:ring-2 focus:ring-rose-500 outline-none transition-all"></textarea>
                         </div>
                     </div>
                 </form>
-                
                 <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end gap-3">
-                    <button onclick="closeEditModal()" class="px-6 py-2.5 rounded-2xl bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 transition-all">ยกเลิก</button>
-                    <button id="saveEdit" class="px-8 py-2.5 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all shadow-lg flex items-center gap-2">
-                        <i class="fas fa-save"></i> บันทึกการแก้ไข
+                    <button onclick="closeModal()" class="px-6 py-2.5 rounded-2xl bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 transition-all">ยกเลิก</button>
+                    <button id="saveBtn" class="px-8 py-2.5 rounded-2xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-all shadow-lg flex items-center gap-2">
+                        <i class="fas fa-save"></i> บันทึกข้อมูล
                     </button>
                 </div>
             </div>
@@ -260,250 +217,388 @@
 $(document).ready(function() {
     // Initialize Table
     const recordTable = $('#record_table').DataTable({
-        "pageLength": 50,
+        "pageLength": 25,
         "ordering": true,
         "info": true,
         "autoWidth": false,
         "responsive": false,
         "language": {
-            "emptyTable": "กรุณาเลือกครูและระบุช่วงวันที่เพื่อดูข้อมูลการลา",
+            "emptyTable": "ไม่พบข้อมูลการลา",
             "search": "ค้นหา:",
             "paginate": { "next": "ถัดไป", "previous": "ก่อนหน้า" }
         },
         "columnDefs": [
-            { "className": "text-center", "targets": [0, 1, 2, 3, 4, 6] },
-            { "orderable": false, "targets": [0, 6] }
+            { "className": "text-center", "targets": [0, 2, 3, 4, 6] },
+            { "orderable": false, "targets": [6] }
         ]
     });
 
-    // Quick Range Handler
-    window.setQuickRange = function(range) {
-        $('.range-btn').removeClass('bg-white shadow text-emerald-600 dark:bg-slate-700 dark:text-white');
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        
-        if (range === 'range1') {
-            $('#range1Btn').addClass('bg-white shadow text-emerald-600 dark:bg-slate-700 dark:text-white');
-            $('#select_date_start').val(`${currentYear}-04-01`);
-            $('#select_date_end').val(`${currentYear}-09-30`);
-        } else if (range === 'range2') {
-            $('#range2Btn').addClass('bg-white shadow text-emerald-600 dark:bg-slate-700 dark:text-white');
-            $('#select_date_start').val(`${currentYear}-10-01`);
-            $('#select_date_end').val(`${currentYear+1}-03-31`);
-        } else {
-            $('#customRangeBtn').addClass('bg-white shadow text-emerald-600 dark:bg-slate-700 dark:text-white');
-            $('#select_date_start').val('');
-            $('#select_date_end').val('');
-        }
-    };
+    // Load initial data
+    fetchLeaveData();
 
-    // Filter Handlers
-    $('#select_department').on('change', function() {
-        const dept = $(this).val();
-        if (dept) {
-            $.getJSON('api/fetch_teachers.php', { department: dept }, function(res) {
-                if (res.success) {
-                    const select = $('#select_teacher');
-                    select.empty().append('<option value="">เลือกครู</option>');
-                    res.data.forEach(t => select.append(`<option value="${t.Teach_id}">${t.Teach_name}</option>`));
-                }
-            });
-        }
+    // Event Handlers
+    $('#select_department').change(function() {
+        populateTeachers($(this).val(), '#select_teacher');
     });
 
-    $('#addDepartment').on('change', function() {
-        const dept = $(this).val();
-        if (dept) {
-            $.getJSON('api/fetch_teachers.php', { department: dept }, function(res) {
-                if (res.success) {
-                    const select = $('#addTeacher');
-                    select.empty().append('<option value="">เลือกครู</option>');
-                    res.data.forEach(t => select.append(`<option value="${t.Teach_id}">${t.Teach_name}</option>`));
-                }
-            });
-        }
+    $('#modalDept').change(function() {
+        populateTeachers($(this).val(), '#modalTeacher');
     });
 
-    $('#filterBtn').on('click', fetchLeaveData);
-    $('#resetBtn').on('click', function() {
+    function populateTeachers(dept, target) {
+        if (!dept) {
+            $(target).empty().append('<option value="">เลือกครู</option>');
+            return;
+        }
+        $.ajax({
+            url: 'api/fetch_teachers.php',
+            method: 'GET',
+            data: { department: dept },
+            dataType: 'json',
+            success: function(res) {
+                if (res.success) {
+                    $(target).empty().append('<option value="">เลือกครู</option>');
+                    res.data.forEach(t => { 
+                        $(target).append(`<option value="${t.Teach_id}">${t.Teach_name}</option>`);
+                    });
+                }
+            }
+        });
+    }
+
+    $('#filter').on('click', fetchLeaveData);
+    $('#reset').on('click', function() {
         $('#select_department').val('');
         $('#select_teacher').empty().append('<option value="">เลือกครู</option>');
-        $('#select_date_start, #select_date_end').val('');
-        recordTable.clear().draw();
-        $('#statsSection').addClass('hidden');
+        $('#select_date_start').val('');
+        $('#select_date_end').val('');
+        updateHeaderDisplay();
+        fetchLeaveData();
     });
 
-    function fetchLeaveData() {
-        const tid = $('#select_teacher').val();
-        const start = $('#select_date_start').val();
-        const end = $('#select_date_end').val();
-        
-        if (!tid) { Swal.fire('โปรดเลือกครู', 'กรุณาระบุชื่อบุคลากรที่ต้องการตรวจสอบ', 'warning'); return; }
+    // Modal Handlers
+    window.closeModal = function() {
+        $('#leaveModal').addClass('hidden');
+        $('body').removeClass('overflow-hidden');
+        $('#leaveForm')[0].reset();
+        $('#editId').val('');
+        $('#modalTitle').html('<i class="fas fa-plus-circle"></i> เพิ่มการแจ้งลา / ไปราชการ');
+        $('#otherLeaveTypeGroup').addClass('hidden');
+        $('#charCount').text('0 / 100');
+    };
 
+    $('#addLeave').on('click', function() {
+        // Pre-select teacher if one is selected in filter
+        const currentTid = $('#select_teacher').val();
+        closeModal(); // Reset form
+        $('#leaveModal').removeClass('hidden');
+        $('body').addClass('overflow-hidden');
+        if (currentTid) $('#modalTeacher').val(currentTid);
+    });
+
+    $('#addStatus').on('change', function() {
+        if ($(this).val() == '9') $('#otherLeaveTypeGroup').removeClass('hidden');
+        else $('#otherLeaveTypeGroup').addClass('hidden');
+    });
+
+    $('#detail').on('input', function() {
+        $('#charCount').text($(this).val().length + ' / 100');
+    });
+
+    $('#saveBtn').on('click', function() {
+        const form = document.getElementById('leaveForm');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        
+        const isEdit = $('#editId').val() !== '';
+        const formData = new FormData(form);
+        
+        Swal.fire({ title: isEdit ? 'กำลังอัปเดต...' : 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        
+        if (isEdit) {
+            // update_leave.php expects JSON
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+            $.ajax({
+                url: 'api/update_leave.php',
+                method: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(res) {
+                    const r = typeof res === 'string' ? JSON.parse(res) : res;
+                    if (r.success) {
+                        Swal.fire({ icon: 'success', title: 'สำเร็จ!', text: 'อัปเดตข้อมูลเรียบร้อย', timer: 1500, showConfirmButton: false });
+                        closeModal();
+                        fetchLeaveData();
+                    } else {
+                        Swal.fire('ผิดพลาด', r.message || 'ไม่สามารถอัปเดตข้อมูลได้', 'error');
+                    }
+                }
+            });
+        } else {
+            // insert_leave.php expects FormData/POST
+            $.ajax({
+                url: 'api/insert_leave.php',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    const r = typeof res === 'string' ? JSON.parse(res) : res;
+                    if (r.success) {
+                        Swal.fire({ icon: 'success', title: 'สำเร็จ!', text: r.message, timer: 1500, showConfirmButton: false });
+                        closeModal();
+                        fetchLeaveData();
+                    } else {
+                        Swal.fire('ข้อผิดพลาด', r.message, 'error');
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.edit-leave', function() {
+        const id = $(this).data('id');
         Swal.fire({ title: 'กำลังโหลด...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         
         $.ajax({
+            url: 'api/get_leave.php',
+            method: 'GET',
+            data: { id: id },
+            success: function(res) {
+                const r = typeof res === 'string' ? JSON.parse(res) : res;
+                if (r.success) {
+                    const d = r.data;
+                    $('#editId').val(d.id);
+                    
+                    // Set department and populate teachers before selecting the teacher
+                    $('#modalDept').val(d.Teach_major);
+                    
+                    const populatePromise = new Promise((resolve) => {
+                        if (!d.Teach_major) { resolve(); return; }
+                        $.ajax({
+                            url: 'api/fetch_teachers.php',
+                            method: 'GET',
+                            data: { department: d.Teach_major },
+                            dataType: 'json',
+                            success: function(teacherRes) {
+                                if (teacherRes.success) {
+                                    $('#modalTeacher').empty().append('<option value="">เลือกครู</option>');
+                                    teacherRes.data.forEach(t => { 
+                                        $('#modalTeacher').append(`<option value="${t.Teach_id}">${t.Teach_name}</option>`);
+                                    });
+                                }
+                                resolve();
+                            },
+                            error: () => resolve()
+                        });
+                        // Safety timeout
+                        setTimeout(resolve, 3000);
+                    });
+
+                    populatePromise.then(() => {
+                        Swal.close();
+                        $('#modalTeacher').val(d.Teach_id);
+                        $('#addStatus').val(d.status);
+                        $('#date_start').val(d.date_start);
+                        $('#date_end').val(d.date_end);
+                        $('#detail').val(d.detail);
+                        $('#modalTitle').html('<i class="fas fa-edit"></i> แก้ไขข้อมูลการลา');
+                        
+                        if (d.status == '9') {
+                            $('#otherLeaveTypeGroup').removeClass('hidden');
+                            $('#other_leave_type').val(d.other_leave_type);
+                        } else {
+                            $('#otherLeaveTypeGroup').addClass('hidden');
+                        }
+                        
+                        $('#charCount').text(d.detail.length + ' / 100');
+                        $('#leaveModal').removeClass('hidden');
+                        $('body').addClass('overflow-hidden');
+                    });
+                } else {
+                    Swal.fire('ผิดพลาด', r.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('ผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
+            }
+        });
+    });
+
+    $(document).on('click', '.del-leave', function() {
+        const id = $(this).data('id');
+        Swal.fire({
+            title: 'ยืนยันการลบ?',
+            text: "ข้อมูลการลาชุดนี้จะถูกลบอย่างถาวร!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48',
+            confirmButtonText: 'ลบข้อมูล',
+            cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'api/del_leave.php',
+                    method: 'POST',
+                    data: { id: id },
+                    success: function(res) {
+                        const r = typeof res === 'string' ? JSON.parse(res) : res;
+                        if (r.success) {
+                            Swal.fire('สำเร็จ!', 'ลบข้อมูลเรียบร้อยแล้ว.', 'success');
+                            fetchLeaveData();
+                        } else {
+                            Swal.fire('ผิดพลาด', r.message, 'error');
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    function updateHeaderDisplay() {
+        const teacherName = $('#select_teacher option:selected').val() ? $('#select_teacher option:selected').text() : 'ทั้งหมด';
+        let ds = $('#select_date_start').val();
+        let de = $('#select_date_end').val();
+        const dateRangeText = ds && de ? `${convertToThaiDate(ds)} - ${convertToThaiDate(de)}` : 'ทั้งหมด';
+
+        $('#selected_teacher_display, #selected_teacher_print').text(teacherName);
+        $('#selected_date_display, #selected_date_print').text(dateRangeText);
+    }
+
+    function fetchLeaveData() {
+        const tid = $('#select_teacher').val() || '';
+        const date_start = $('#select_date_start').val() || '';
+        const date_end = $('#select_date_end').val() || '';
+        updateHeaderDisplay();
+
+        $.ajax({
             url: 'api/fetch_leave.php',
             method: 'GET',
-            data: { tid, date_start: start, date_end: end },
             dataType: 'json',
+            data: { tid, date_start, date_end },
             success: function(res) {
-                Swal.close();
                 if (res.success) {
                     populateTable(res.data);
-                    $('#display_name').text($('#select_teacher option:selected').text());
-                    $('#display_dept').text($('#select_department option:selected').text());
-                    $('#statsSection').removeClass('hidden');
-                } else {
-                    Swal.fire('ผิดพลาด', res.message, 'error');
                 }
             }
         });
     }
 
-    function populateTable(leaves) {
+    function populateTable(data) {
         recordTable.clear();
-        let sums = { total: 0, 1: 0, 2: 0, 3: 0, 9: 0 };
-        
-        leaves.forEach((leave, idx) => {
-            const start = new Date(leave.date_start);
-            const end = new Date(leave.date_end);
-            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-            
-            sums.total += diff;
-            if (sums[leave.status] !== undefined) sums[leave.status] += diff;
+        let totals = { all: 0, 1: 0, 2: 0, 3: 0, 9: 0 };
+
+        data.forEach((item, index) => {
+            let days = calculateWeekDays(item.date_start, item.date_end);
+            totals.all += days;
+            if (totals[item.status] !== undefined) totals[item.status] += days;
+            else totals[9] += days;
 
             recordTable.row.add([
-                idx + 1,
-                getStatusLabel(leave.status),
-                formatThaiDate(leave.date_start),
-                formatThaiDate(leave.date_end),
-                `<span class="font-black text-slate-800">${diff}</span>`,
-                `<div class="max-w-md text-slate-500 font-medium">${leave.detail}</div>`,
-                `<div class="flex gap-2 justify-center no-print">
-                    <a href="print_leave.php?id=${leave.id}" target="_blank" class="w-8 h-8 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition-all flex items-center justify-center shadow-lg shadow-amber-500/20"><i class="fas fa-print text-xs"></i></a>
-                    <button onclick="editLeave('${leave.id}')" class="w-8 h-8 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all flex items-center justify-center shadow-lg shadow-blue-500/20"><i class="fas fa-edit text-xs"></i></button>
-                 </div>`
+                index + 1,
+                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${getLeaveStatusClass(item.status)}">${getLeaveStatusText(item.status)}</span>`,
+                `<span class="text-sm font-medium text-slate-700 dark:text-slate-300">${convertToThaiDate(item.date_start)}</span>`,
+                `<span class="text-sm font-medium text-slate-700 dark:text-slate-300">${convertToThaiDate(item.date_end)}</span>`,
+                `<span class="font-bold text-rose-600 dark:text-rose-400">${days}</span>`,
+                `<div class="text-sm text-gray-600 dark:text-gray-400">${item.detail}</div>`,
+                `<div class="no-print flex gap-2 justify-center">
+                    <a href="print_leave.php?id=${item.id}" target="_blank" class="w-8 h-8 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all flex items-center justify-center"><i class="fas fa-print text-xs"></i></a>
+                    <button class="w-8 h-8 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition-all flex items-center justify-center edit-leave" data-id="${item.id}"><i class="fas fa-edit text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-rose-500 text-white hover:bg-rose-600 transition-all flex items-center justify-center del-leave" data-id="${item.id}"><i class="fas fa-trash text-xs"></i></button>
+                </div>`
             ]);
         });
-        
         recordTable.draw();
-        
-        // Update stats
-        $('#total_leave_days').text(sums.total);
-        $('#total_sick_leave_days').text(sums[1]);
-        $('#total_personal_leave_days').text(sums[2]);
-        $('#total_official_leave_days').text(sums[3]);
-        $('#total_other_leave_days').text(sums[9]);
+        updateSummaryCards(totals);
     }
 
-    function getStatusLabel(s) {
-        const labels = {
-            '1': { text: 'ลาป่วย', bg: 'bg-rose-100 text-rose-700' },
-            '2': { text: 'ลากิจ', bg: 'bg-amber-100 text-amber-700' },
-            '3': { text: 'ไปราชการ', bg: 'bg-sky-100 text-sky-700' },
-            '4': { text: 'ลาคลอด', bg: 'bg-pink-100 text-pink-700' },
-            '9': { text: 'อื่นๆ', bg: 'bg-slate-100 text-slate-700' }
-        };
-        const l = labels[s] || { text: 'ไม่ทราบ', bg: 'bg-gray-100' };
-        return `<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black ${l.bg}">${l.text}</span>`;
+    function calculateWeekDays(start, end) {
+        const s = new Date(start);
+        const e = new Date(end);
+        let count = 0;
+        let cur = new Date(s);
+        while (cur <= e) {
+            if (cur.getDay() !== 0 && cur.getDay() !== 6) count++;
+            cur.setDate(cur.getDate() + 1);
+        }
+        return count;
     }
 
-    function formatThaiDate(dateStr) {
-        const d = new Date(dateStr);
-        const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+    function getLeaveStatusText(s) {
+        switch (s) {
+            case '1': return 'ลาป่วย';
+            case '2': return 'ลากิจ';
+            case '3': return 'ไปราชการ';
+            case '4': return 'ลาคลอด';
+            case '9': return 'อื่นๆ';
+            default: return 'ไม่ระบุ';
+        }
     }
 
-    // Modal Handlers
-    window.openAddModal = () => { $('#addModal').removeClass('hidden'); $('body').addClass('overflow-hidden'); };
-    window.closeAddModal = () => { $('#addModal').addClass('hidden'); $('body').removeClass('overflow-hidden'); $('#addForm')[0].reset(); };
-    
-    $('#addStatus').on('change', function() { $(this).val() === '9' ? $('#otherLeaveTypeGroup').show() : $('#otherLeaveTypeGroup').hide(); });
-    $('#editStatus').on('change', function() { $(this).val() === '9' ? $('#editOtherLeaveTypeGroup').show() : $('#editOtherLeaveTypeGroup').hide(); });
+    function getLeaveStatusClass(s) {
+        switch (s) {
+            case '1': return 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400';
+            case '2': return 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400';
+            case '3': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400';
+            case '4': return 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400';
+            default: return 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400';
+        }
+    }
 
-    $('#saveAdd').on('click', function() {
-        const form = document.getElementById('addForm');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        
-        Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-        $.ajax({
-            url: 'api/insert_leave.php',
-            method: 'POST',
-            data: new FormData(form),
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            success: function(res) {
-                if (res.success) {
-                    Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
-                    closeAddModal();
-                    if ($('#select_teacher').val()) fetchLeaveData();
-                } else {
-                    Swal.fire('ผิดพลาด', res.message, 'error');
-                }
-            }
-        });
-    });
+    function updateSummaryCards(t) {
+        $('#card_total_leave_days').text(t.all);
+        $('#card_total_sick_leave_days').text(t[1]);
+        $('#card_total_personal_leave_days').text(t[2]);
+        $('#card_total_official_leave_days').text(t[3]);
+        $('#card_total_other_leave_days').text(t[9]);
+    }
 
-    window.editLeave = (id) => {
-        $.getJSON('api/get_leave.php', { id }, function(res) {
-            if (res.success) {
-                const l = res.data;
-                $('#editLeaveId').val(l.id);
-                $('#editTeacherId').val(l.Teach_id);
-                $('#editStatus').val(l.status).trigger('change');
-                $('#editOtherLeaveType').val(l.other_leave_type);
-                $('#editStartDate').val(l.date_start);
-                $('#editEndDate').val(l.date_end);
-                $('#editDetail').val(l.detail);
-                
-                $('#editModal').removeClass('hidden');
-                $('body').addClass('overflow-hidden');
-            }
-        });
-    };
+    function convertToThaiDate(d) {
+        if (!d) return '-';
+        const m = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        const date = new Date(d);
+        return `${date.getDate()} ${m[date.getMonth()]} ${date.getFullYear() + 543}`;
+    }
 
-    window.closeEditModal = () => { $('#editModal').addClass('hidden'); $('body').removeClass('overflow-hidden'); };
-
-    $('#saveEdit').on('click', function() {
-        const form = document.getElementById('editForm');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        
-        const data = Object.fromEntries(new FormData(form).entries());
-        $.ajax({
-            url: 'api/update_leave.php',
-            method: 'POST',
-            data: JSON.stringify(data),
-            contentType: 'application/json',
-            dataType: 'json',
-            success: function(res) {
-                if (res.success) {
-                    Swal.fire('สำเร็จ', 'แก้ไขข้อมูลเรียบร้อย', 'success');
-                    closeEditModal();
-                    fetchLeaveData();
-                } else {
-                    Swal.fire('ผิดพลาด', res.message, 'error');
-                }
-            }
-        });
-    });
-
-    window.printPage = function() {
-        window.print();
-    };
+    window.printPage = function() { window.print(); };
 });
 </script>
 
 <style>
-@media print {
-    .no-print { display: none !important; }
-    #record_table { width: 100% !important; border-collapse: collapse !important; }
-    #record_table td, #record_table th { border: 1px solid #e2e8f0 !important; padding: 8px !important; }
-    @page { size: landscape; margin: 1cm; }
+/* Same responsive and print styles but with rose colors */
+@media screen and (max-width: 768px) {
+    #record_table thead { display: none; }
+    #record_table tbody tr {
+        display: flex; flex-direction: column; background: var(--card-bg, #ffffff); border-radius: 1.5rem;
+        margin-bottom: 1rem; padding: 1rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.05); position: relative;
+    }
+    .dark #record_table tbody tr { --card-bg: #1e293b; border-color: rgba(255, 255, 255, 0.1); }
+    #record_table tbody td { display: flex; align-items: flex-start; padding: 0.5rem 0; border: none !important; text-align: left !important; }
+    #record_table tbody td:first-child {
+        position: absolute; top: 0.75rem; right: 0.75rem; background: linear-gradient(135deg, #f43f5e, #fb923c);
+        color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold;
+    }
+    #record_table tbody td:nth-child(2) { padding-right: 3rem; flex-direction: column; }
+    #record_table tbody td:nth-child(3)::before { content: "📅 เริ่ม: "; font-weight: 600; color: #64748b; margin-right: 0.5rem; }
+    #record_table tbody td:nth-child(4)::before { content: "📅 สิ้นสุด: "; font-weight: 600; color: #64748b; margin-right: 0.5rem; }
+    #record_table tbody td:nth-child(5)::before { content: "⏱️ รวม: "; font-weight: 600; color: #64748b; margin-right: 0.5rem; }
+    #record_table tbody td:nth-child(6)::before { content: "ℹ️ เหตุผล: "; font-weight: 600; color: #64748b; margin-right: 0.5rem; }
+    #record_table tbody td:last-child { border-top: 1px dashed rgba(0, 0, 0, 0.1) !important; padding-top: 1rem; margin-top: 0.5rem; justify-content: center; }
 }
-/* DataTables overrides same as teachers view */
-#record_table_wrapper .dataTables_filter input {
-    @apply border border-gray-100 dark:border-gray-700 rounded-xl px-4 py-2 outline-none ml-2 bg-gray-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300;
+
+@media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: white !important; }
+    button, nav, aside, .sidebar, #select_department, #select_teacher, #select_date_start, #select_date_end, #filter, #reset { display: none !important; }
+    .glass-morphism { background: white !important; box-shadow: none !important; border: 1px solid #ddd !important; border-radius: 0.5rem !important; }
+    .bg-gradient-to-br { background: transparent !important; color: black !important; }
+    #record_table { width: 100% !important; border-collapse: collapse !important; color: black !important; }
+    #record_table thead { display: table-header-group !important; }
+    #record_table thead th { background: #f3f4f6 !important; border: 1px solid #d1d5db !important; padding: 8px !important; }
+    #record_table tbody tr { display: table-row !important; background: white !important; }
+    #record_table tbody td { display: table-cell !important; border: 1px solid #d1d5db !important; padding: 8px !important; }
+    #record_table thead th:last-child, #record_table tbody td:last-child { display: none !important; }
+    #record_table tbody td::before { content: none !important; }
+    @page { size: A4 portrait; margin: 1cm; }
 }
 </style>
