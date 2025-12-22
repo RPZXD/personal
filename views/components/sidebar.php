@@ -26,13 +26,13 @@ $menuItems = [
         'icon' => 'fa-trophy',
         'gradient' => ['from' => 'amber-500', 'to' => 'orange-600'],
     ],
-    [
+    /*[
         'key' => 'leave',
         'name' => 'สรุปการเข้างาน/ลา',
         'url' => 'leave.php',
         'icon' => 'fa-calendar-minus',
         'gradient' => ['from' => 'rose-500', 'to' => 'pink-600'],
-    ],
+    ],*/
     [
         'key' => 'report',
         'name' => 'สรุปรายงานภาพรวม',
