@@ -1,6 +1,7 @@
 <?php
 
-class Person {
+class Person
+{
     private $conn;
     private $table_position = "tb_position2";
     private $table_academic = "tb_academic";
@@ -9,11 +10,13 @@ class Person {
     private $table_leave = "tb_leave";
     private $table_late_early = "tb_late_early";
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    public function getPositionById($position_id) {
+    public function getPositionById($position_id)
+    {
         $query = "SELECT namep2 FROM {$this->table_position} WHERE pid2 = :position_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':position_id', $position_id);
@@ -21,7 +24,8 @@ class Person {
         return $stmt->fetchColumn();
     }
 
-    public function getAcademicById($academic_id) {
+    public function getAcademicById($academic_id)
+    {
         $query = "SELECT namec FROM {$this->table_academic} WHERE cid = :academic_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':academic_id', $academic_id);
@@ -29,21 +33,24 @@ class Person {
         return $stmt->fetchColumn();
     }
 
-    public function getAllPositions() {
+    public function getAllPositions()
+    {
         $query = "SELECT pid2, namep2 FROM {$this->table_position}";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllAcademics() {
+    public function getAllAcademics()
+    {
         $query = "SELECT cid, namec FROM {$this->table_academic}";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getTrainingByTeacherId($tid, $term = '', $year = '') {
+    public function getTrainingByTeacherId($tid, $term = '', $year = '')
+    {
         $query = "SELECT * FROM {$this->table_seminar} WHERE tid = :tid";
         if (!empty($term)) {
             $query .= " AND term = :term";
@@ -52,7 +59,7 @@ class Person {
             $query .= " AND year = :year";
         }
         $query .= " ORDER BY dstart DESC, semid DESC";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         if (!empty($term)) {
@@ -65,7 +72,8 @@ class Person {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getChartTrainingByTeacherId($tid, $term = '', $year = '') {
+    public function getChartTrainingByTeacherId($tid, $term = '', $year = '')
+    {
         $query = "SELECT 
                     semid, 
                     tid, 
@@ -91,16 +99,16 @@ class Person {
                     suggest 
                   FROM {$this->table_seminar} 
                   WHERE tid = :tid";
-    
+
         if (!empty($term)) {
             $query .= " AND term = :term";
         }
         if (!empty($year)) {
             $query .= " AND year = :year";
         }
-        
+
         $query .= " ORDER BY dstart DESC, semid DESC";
-    
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         if (!empty($term)) {
@@ -109,22 +117,24 @@ class Person {
         if (!empty($year)) {
             $stmt->bindParam(':year', $year);
         }
-    
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
 
 
 
-    public function getDistinctYears() {
+
+    public function getDistinctYears()
+    {
         $query = "SELECT DISTINCT year FROM {$this->table_seminar} ORDER BY year DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private function fetchResults($stmt, $singleRow = false) {
+    private function fetchResults($stmt, $singleRow = false)
+    {
         $stmt->execute();
         if ($singleRow) {
             return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -133,67 +143,69 @@ class Person {
     }
 
 
-    public function getTotalHoursAndMinutes($tid, $term = '', $year = '') {
+    public function getTotalHoursAndMinutes($tid, $term = '', $year = '')
+    {
         $query = "SELECT
                     FLOOR(SUM(hours) + SUM(mn) / 60) AS total_hours,
                     MOD(SUM(mn), 60) AS total_minutes
                   FROM {$this->table_seminar}
                   WHERE tid = :tid";
-        
+
         if (!empty($term)) {
             $query .= " AND term = :term";
         }
         if (!empty($year)) {
             $query .= " AND year = :year";
         }
-        
+
         $query .= " GROUP BY tid";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
-        
+
         if (!empty($term)) {
             $stmt->bindParam(':term', $term);
         }
         if (!empty($year)) {
             $stmt->bindParam(':year', $year);
         }
-        
+
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if (!$result) {
             return ['total_hours' => 0, 'total_minutes' => 0];
         }
-        
+
         return $result;
     }
 
-    public function getTotalHoursAndMinutesByTermAndYear($term = 'all', $year = 'all') {
+    public function getTotalHoursAndMinutesByTermAndYear($term = 'all', $year = 'all')
+    {
         $query = "SELECT
                     tid,
                     FLOOR(SUM(hours) + SUM(mn) / 60) AS total_hours,
                     MOD(SUM(mn), 60) AS total_minutes
                   FROM {$this->table_seminar} WHERE 1=1";
-        
+
         if ($term !== 'all' && !empty($term)) {
             $query .= " AND term = :term";
         }
         if ($year !== 'all' && !empty($year)) {
             $query .= " AND year = :year";
         }
-        
+
         $query .= " GROUP BY tid";
-        
+
         $stmt = $this->conn->prepare($query);
-        
+
         if ($term !== 'all' && !empty($term)) {
             $stmt->bindParam(':term', $term);
         }
         if ($year !== 'all' && !empty($year)) {
             $stmt->bindParam(':year', $year);
         }
-        
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -202,27 +214,28 @@ class Person {
      * Get all training records with optional term and year filters.
      * Returns all training records without teacher ID filter.
      */
-    public function getAllTrainingRecords($term = '', $year = '') {
+    public function getAllTrainingRecords($term = '', $year = '')
+    {
         $query = "SELECT * FROM {$this->table_seminar} WHERE 1=1";
-        
+
         if (!empty($term)) {
             $query .= " AND term = :term";
         }
         if (!empty($year)) {
             $query .= " AND year = :year";
         }
-        
+
         $query .= " ORDER BY dstart DESC, semid DESC";
-        
+
         $stmt = $this->conn->prepare($query);
-        
+
         if (!empty($term)) {
             $stmt->bindParam(':term', $term);
         }
         if (!empty($year)) {
             $stmt->bindParam(':year', $year);
         }
-        
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -231,40 +244,42 @@ class Person {
      * Get total hours and minutes across all teachers with optional filters.
      * Returns combined total for all training records.
      */
-    public function getAllTotalHoursAndMinutes($term = '', $year = '') {
+    public function getAllTotalHoursAndMinutes($term = '', $year = '')
+    {
         $query = "SELECT
                     FLOOR(SUM(hours) + SUM(mn) / 60) AS total_hours,
                     MOD(SUM(mn), 60) AS total_minutes
                   FROM {$this->table_seminar} WHERE 1=1";
-        
+
         if (!empty($term)) {
             $query .= " AND term = :term";
         }
         if (!empty($year)) {
             $query .= " AND year = :year";
         }
-        
+
         $stmt = $this->conn->prepare($query);
-        
+
         if (!empty($term)) {
             $stmt->bindParam(':term', $term);
         }
         if (!empty($year)) {
             $stmt->bindParam(':year', $year);
         }
-        
+
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         // Return default values if no records found
         if (!$result || $result['total_hours'] === null) {
             return ['total_hours' => 0, 'total_minutes' => 0];
         }
-        
+
         return $result;
     }
 
-    public function getTrainingByMonth($month) {
+    public function getTrainingByMonth($month)
+    {
         $query = "SELECT
                         tid,
                         topic,
@@ -283,7 +298,8 @@ class Person {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getTrainingById($semid) {
+    public function getTrainingById($semid)
+    {
         $query = "SELECT * FROM {$this->table_seminar} WHERE semid = :semid";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':semid', $semid);
@@ -291,7 +307,8 @@ class Person {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function updateTraining($semid, $data) {
+    public function updateTraining($semid, $data)
+    {
         $query = "UPDATE {$this->table_seminar} SET 
                     tid = :tid,
                     term = :term,
@@ -313,7 +330,8 @@ class Person {
         return $stmt->execute();
     }
 
-    public function getTrainingDetailsById($semid) {
+    public function getTrainingDetailsById($semid)
+    {
         $query = "SELECT * FROM {$this->table_seminar} WHERE semid = :semid";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':semid', $semid);
@@ -321,7 +339,8 @@ class Person {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function updateTrainingDetails($semid, $tid, $topic, $dstart, $dend, $term, $year, $supports, $place, $hours, $mn, $numday, $types, $budget, $sdoc, $know, $way, $suggest) {
+    public function updateTrainingDetails($semid, $tid, $topic, $dstart, $dend, $term, $year, $supports, $place, $hours, $mn, $numday, $types, $budget, $sdoc, $know, $way, $suggest)
+    {
         $query = "UPDATE {$this->table_seminar} SET 
                     tid = :tid,
                     topic = :topic,
@@ -343,7 +362,7 @@ class Person {
             $query .= ", sdoc = :sdoc";
         }
         $query .= " WHERE semid = :semid";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         $stmt->bindParam(':topic', $topic);
@@ -368,7 +387,8 @@ class Person {
         return $stmt->execute();
     }
 
-    public function insertTrainingDetails($tid, $topic, $dstart, $dend, $term, $year, $supports, $place, $hours, $mn, $numday, $types, $budget, $sdoc, $know, $way, $suggest) {
+    public function insertTrainingDetails($tid, $topic, $dstart, $dend, $term, $year, $supports, $place, $hours, $mn, $numday, $types, $budget, $sdoc, $know, $way, $suggest)
+    {
         $query = "INSERT INTO {$this->table_seminar} (tid, topic, dstart, dend, term, year, supports, place, hours, mn, numday, types, budget, sdoc, know, way, suggest) 
                   VALUES (:tid, :topic, :dstart, :dend, :term, :year, :supports, :place, :hours, :mn, :numday, :types, :budget, :sdoc, :know, :way, :suggest)";
         $stmt = $this->conn->prepare($query);
@@ -392,14 +412,16 @@ class Person {
         return $stmt->execute();
     }
 
-    public function deleteTrainingById($semid) {
+    public function deleteTrainingById($semid)
+    {
         $query = "DELETE FROM {$this->table_seminar} WHERE semid = :semid";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':semid', $semid);
         return $stmt->execute();
     }
 
-    public function getAwardsByTeacherId($tid, $term = '', $year = '') {
+    public function getAwardsByTeacherId($tid, $term = '', $year = '')
+    {
         $query = "SELECT * FROM {$this->table_award} WHERE tid = :tid";
         if (!empty($term)) {
             $query .= " AND term = :term";
@@ -408,7 +430,7 @@ class Person {
             $query .= " AND year = :year";
         }
         $query .= " ORDER BY date1 DESC, awid DESC";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         if (!empty($term)) {
@@ -421,7 +443,8 @@ class Person {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getChartAwardsByTeacherId($tid, $term = '', $year = '') {
+    public function getChartAwardsByTeacherId($tid, $term = '', $year = '')
+    {
         $query = "SELECT 
                     level, 
                     CASE 
@@ -434,16 +457,16 @@ class Person {
                     COUNT(*) AS total_awards
                   FROM {$this->table_award} 
                   WHERE tid = :tid";
-    
+
         if (!empty($term)) {
             $query .= " AND term = :term";
         }
         if (!empty($year)) {
             $query .= " AND year = :year";
         }
-    
+
         $query .= " GROUP BY level ORDER BY level ASC";
-    
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         if (!empty($term)) {
@@ -452,20 +475,22 @@ class Person {
         if (!empty($year)) {
             $stmt->bindParam(':year', $year);
         }
-    
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
 
-    public function getDistinctYearsFromAwards() {
+
+    public function getDistinctYearsFromAwards()
+    {
         $query = "SELECT DISTINCT year FROM {$this->table_award} ORDER BY year DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAwardDetailsById($awid) {
+    public function getAwardDetailsById($awid)
+    {
         $query = "SELECT * FROM {$this->table_award} WHERE awid = :awid";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':awid', $awid);
@@ -473,7 +498,8 @@ class Person {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function insertAwardDetails($tid, $award, $level, $date1, $term, $year, $department, $certificate) {
+    public function insertAwardDetails($tid, $award, $level, $date1, $term, $year, $department, $certificate)
+    {
         $query = "INSERT INTO {$this->table_award} (tid, award, level, date1, term, year, department, certificate) 
                   VALUES (:tid, :award, :level, :date1, :term, :year, :department, :certificate)";
         $stmt = $this->conn->prepare($query);
@@ -488,7 +514,8 @@ class Person {
         return $stmt->execute();
     }
 
-    public function updateAwardDetails($awid, $tid, $award, $level, $date1, $term, $year, $department, $certificate) {
+    public function updateAwardDetails($awid, $tid, $award, $level, $date1, $term, $year, $department, $certificate)
+    {
         $query = "UPDATE {$this->table_award} SET 
                     tid = :tid,
                     award = :award,
@@ -501,7 +528,7 @@ class Person {
             $query .= ", certificate = :certificate";
         }
         $query .= " WHERE awid = :awid";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         $stmt->bindParam(':award', $award);
@@ -517,14 +544,16 @@ class Person {
         return $stmt->execute();
     }
 
-    public function deleteAwardById($awid) {
+    public function deleteAwardById($awid)
+    {
         $query = "DELETE FROM {$this->table_award} WHERE awid = :awid";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':awid', $awid);
         return $stmt->execute();
     }
 
-    public function getLeavesByTeacherId($tid, $term = '', $year = '') {
+    public function getLeavesByTeacherId($tid, $term = '', $year = '')
+    {
         $query = "SELECT * FROM {$this->table_leave} WHERE Teach_id = :tid";
         if (!empty($term)) {
             $query .= " AND term = :term";
@@ -533,7 +562,7 @@ class Person {
             $query .= " AND year = :year";
         }
         $query .= " ORDER BY date_start DESC, id DESC";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         if (!empty($term)) {
@@ -546,7 +575,8 @@ class Person {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getLeaveDetailsById($id) {
+    public function getLeaveDetailsById($id)
+    {
         $query = "SELECT * FROM {$this->table_leave} WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
@@ -554,7 +584,8 @@ class Person {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getLeaveById($id) {
+    public function getLeaveById($id)
+    {
         $query = "SELECT * FROM {$this->table_leave} WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
@@ -562,7 +593,8 @@ class Person {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function insertLeaveDetails($data) {
+    public function insertLeaveDetails($data)
+    {
         $query = "INSERT INTO {$this->table_leave} (Teach_id, status, date_start, date_end, detail, other_leave_type) 
                   VALUES (:tid, :status, :date_start, :date_end, :detail, :other_leave_type)";
         $stmt = $this->conn->prepare($query);
@@ -575,7 +607,8 @@ class Person {
         return $stmt->execute();
     }
 
-    public function updateLeaveDetails($data) {
+    public function updateLeaveDetails($data)
+    {
         $query = "UPDATE {$this->table_leave} SET 
                     Teach_id = :tid,
                     status = :status,
@@ -595,14 +628,16 @@ class Person {
         return $stmt->execute();
     }
 
-    public function deleteLeaveById($id) {
+    public function deleteLeaveById($id)
+    {
         $query = "DELETE FROM {$this->table_leave} WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
 
-    public function getLeavesByTeacherIdAndDateRange($tid, $date_start = '', $date_end = '') {
+    public function getLeavesByTeacherIdAndDateRange($tid, $date_start = '', $date_end = '')
+    {
         $query = "SELECT * FROM {$this->table_leave} WHERE Teach_id = :tid";
         if (!empty($date_start)) {
             $query .= " AND create_at >= :date_start";
@@ -611,7 +646,7 @@ class Person {
             $query .= " AND create_at <= :date_end";
         }
         $query .= " ORDER BY create_at DESC, id DESC";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
         if (!empty($date_start)) {
@@ -624,7 +659,8 @@ class Person {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getChartLeavesByTeacherIdAndDateRange($tid, $date_start = '', $date_end = '') {
+    public function getChartLeavesByTeacherIdAndDateRange($tid, $date_start = '', $date_end = '')
+    {
         $query = "SELECT 
                     status, 
                     CASE 
@@ -638,33 +674,34 @@ class Person {
                     SUM(DATEDIFF(date_end, date_start) + 1) AS total_days
                   FROM {$this->table_leave}
                   WHERE Teach_id = :tid";
-    
+
         if (!empty($date_start)) {
             $query .= " AND create_at >= :date_start";
         }
         if (!empty($date_end)) {
             $query .= " AND create_at <= :date_end";
         }
-    
+
         $query .= " GROUP BY status ORDER BY status ASC";
-    
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
-    
+
         if (!empty($date_start)) {
             $stmt->bindParam(':date_start', $date_start);
         }
         if (!empty($date_end)) {
             $stmt->bindParam(':date_end', $date_end);
         }
-    
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
 
-    public function update_person($Teach_id, $Teach_name, $Teach_major, $Teach_phone, $Teach_addr, $Teach_email, $Teach_Position, $Teach_Academic, $Teach_HiDegree, $Teach_photo = null) {
-        $query = "UPDATE tb_teacher SET 
+
+    public function update_person($Teach_id, $Teach_name, $Teach_major, $Teach_phone, $Teach_addr, $Teach_email, $Teach_Position, $Teach_Academic, $Teach_HiDegree, $Teach_photo = null)
+    {
+        $query = "UPDATE phichaia_student.teacher SET 
                     Teach_name = :Teach_name,
                     Teach_major = :Teach_major,
                     Teach_phone = :Teach_phone,
@@ -694,7 +731,8 @@ class Person {
         return $stmt->execute();
     }
 
-    public function getLeaveSummaryByDate($date) {
+    public function getLeaveSummaryByDate($date)
+    {
         $query = "SELECT *
                   FROM {$this->table_leave}
                   WHERE date_start <= :date AND date_end >= :date";
@@ -704,7 +742,8 @@ class Person {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function isLeavePeriodOverlapping($tid, $date_start, $date_end) {
+    public function isLeavePeriodOverlapping($tid, $date_start, $date_end)
+    {
         $query = "SELECT COUNT(*) FROM {$this->table_leave} 
                   WHERE Teach_id = :tid 
                   AND ((date_start <= :date_end AND date_end >= :date_start))";
@@ -716,7 +755,8 @@ class Person {
         return $stmt->fetchColumn() > 0;
     }
 
-    public function getDashboardStats($tid, $year) {
+    public function getDashboardStats($tid, $year)
+    {
         // Training stats
         $query_training = "SELECT 
                             SUM(hours + (mn / 60)) as total_hours,
@@ -742,7 +782,7 @@ class Person {
                          FROM {$this->table_leave} 
                          WHERE Teach_id = :tid 
                          AND (YEAR(date_start) = :year_eng OR YEAR(date_end) = :year_eng)";
-        
+
         // Convert Thai year to Gregorian for DATE functions
         $year_eng = intval($year) - 543;
         $stmt_l = $this->conn->prepare($query_leave);
@@ -756,40 +796,55 @@ class Person {
         ];
     }
 
-    public function getLateEarlyByTeacherId($tid, $term = '', $year = '') {
+    public function getLateEarlyByTeacherId($tid, $term = '', $year = '')
+    {
         $query = "SELECT * FROM {$this->table_late_early} WHERE tid = :tid";
-        if (!empty($term)) $query .= " AND term = :term";
-        if (!empty($year)) $query .= " AND year = :year";
+        if (!empty($term))
+            $query .= " AND term = :term";
+        if (!empty($year))
+            $query .= " AND year = :year";
         $query .= " ORDER BY date_record DESC, id DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tid', $tid);
-        if (!empty($term)) $stmt->bindParam(':term', $term);
-        if (!empty($year)) $stmt->bindParam(':year', $year);
+        if (!empty($term))
+            $stmt->bindParam(':term', $term);
+        if (!empty($year))
+            $stmt->bindParam(':year', $year);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllLateEarly($tid = '', $date_start = '', $date_end = '') {
-        $query = "SELECT l.*, t.tname AS Teach_name, '' AS Teach_major 
+    public function getAllLateEarly($tid = '', $date_start = '', $date_end = '')
+    {
+        $query = "SELECT l.*, t.Teach_name, t.Teach_major 
                   FROM {$this->table_late_early} l
-                  LEFT JOIN tb_teacher t ON l.tid = t.tid
+                  LEFT JOIN phichaia_student.teacher t ON l.tid = t.Teach_id
                   WHERE 1=1";
-        if (!empty($tid)) $query .= " AND l.tid = :tid";
-        if (!empty($date_start)) $query .= " AND l.date_record >= :date_start";
-        if (!empty($date_end)) $query .= " AND l.date_record <= :date_end";
+        if (!empty($tid))
+            $query .= " AND l.tid = :tid";
+        if (!empty($date_start))
+            $query .= " AND l.date_record >= :date_start";
+        if (!empty($date_end))
+            $query .= " AND l.date_record <= :date_end";
         $query .= " ORDER BY l.date_record DESC, l.id DESC";
-        
+
         $stmt = $this->conn->prepare($query);
-        if (!empty($tid)) $stmt->bindParam(':tid', $tid);
-        if (!empty($date_start)) $stmt->bindParam(':date_start', $date_start);
-        if (!empty($date_end)) $stmt->bindParam(':date_end', $date_end);
+        if (!empty($tid))
+            $stmt->bindParam(':tid', $tid);
+        if (!empty($date_start))
+            $stmt->bindParam(':date_start', $date_start);
+        if (!empty($date_end))
+            $stmt->bindParam(':date_end', $date_end);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
-    public function getLateEarlyById($id) {
-        $query = "SELECT l.*, '' AS Teach_major FROM {$this->table_late_early} l 
+    public function getLateEarlyById($id)
+    {
+        $query = "SELECT l.*, t.Teach_name, t.Teach_major 
+                  FROM {$this->table_late_early} l 
+                  LEFT JOIN phichaia_student.teacher t ON l.tid = t.Teach_id
                   WHERE l.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
@@ -798,7 +853,8 @@ class Person {
     }
 
 
-    public function insertLateEarly($data) {
+    public function insertLateEarly($data)
+    {
         $query = "INSERT INTO {$this->table_late_early} (tid, date_record, type, time_record, detail, term, year) 
                   VALUES (:tid, :date_record, :type, :time_record, :detail, :term, :year)";
         $stmt = $this->conn->prepare($query);
@@ -812,7 +868,8 @@ class Person {
         return $stmt->execute();
     }
 
-    public function updateLateEarly($data) {
+    public function updateLateEarly($data)
+    {
         $query = "UPDATE {$this->table_late_early} SET 
                     tid = :tid,
                     date_record = :date_record,
@@ -834,7 +891,8 @@ class Person {
         return $stmt->execute();
     }
 
-    public function deleteLateEarly($id) {
+    public function deleteLateEarly($id)
+    {
         $query = "DELETE FROM {$this->table_late_early} WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
