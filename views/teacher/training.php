@@ -169,6 +169,14 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700/50">
                     <!-- Loaded by AJAX -->
                 </tbody>
+                <tfoot id="print_tfoot" class="hidden">
+                    <tr>
+                        <th colspan="3" style="text-align: right; padding-right: 15px;">รวมเวลาเข้ารับการอบรม/สัมมนา ทั้งสิ้น</th>
+                        <th id="print_total_hours_col" style="text-align: center;">-</th>
+                        <th colspan="2"></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -419,13 +427,12 @@
                     year: $('#select_year').val() || 'all'
                 },
                 success: function (res) {
-                    if (res.success) {
-                        populateTable(res.data);
-                        updateStats(res.data);
+                    const data = res.data && Array.isArray(res.data) ? res.data : [];
+                    populateTable(data);
+                    updateStats(data);
 
-                        $('#selected_term_display').text($('#select_term').val() ? 'เทอม ' + $('#select_term').val() : 'ทั้งหมด');
-                        $('#selected_year_display').text($('#select_year').val() || 'ทั้งหมด');
-                    }
+                    $('#selected_term_display').text($('#select_term').val() ? 'เทอม ' + $('#select_term').val() : 'ทั้งหมด');
+                    $('#selected_year_display').text($('#select_year').val() || 'ทั้งหมด');
                 }
             });
         }
@@ -437,7 +444,7 @@
                     index + 1,
                     `<div class="font-bold text-gray-900 dark:text-white">${item.topic}</div><div class="text-xs text-gray-500 mt-1"><i class="fas fa-building mr-1"></i> ${item.supports}</div>`,
                     `<span class="text-sm font-medium">${convertToThaiDate(item.dstart)}</span>`,
-                    `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400">${item.hours} ชม. ${item.mn} น.</span>`,
+                    `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400" data-h="${item.hours || 0}" data-m="${item.mn || 0}" data-b="${item.budget || 0}">${item.hours} ชม. ${item.mn} น.</span>`,
                     `<span class="text-xs font-bold">${item.term}/${item.year}</span>`,
                     item.sdoc ?
                         `<div class="block w-20 mx-auto rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all shadow-emerald-500/10 cursor-pointer btn-view-image" data-img="../uploads/file_seminar/${item.sdoc}">
@@ -459,9 +466,14 @@
 
         function updateStats(data) {
             let h = 0, m = 0, budget = 0;
-            data.forEach(item => { h += parseInt(item.hours); m += parseInt(item.mn); budget += parseFloat(item.budget || 0); });
+            data.forEach(item => { 
+                h += parseInt(item.hours || 0, 10) || 0; 
+                m += parseInt(item.mn || 0, 10) || 0; 
+                budget += parseFloat(item.budget || 0) || 0; 
+            });
             h += Math.floor(m / 60); m %= 60;
             $('#total_hours').text(`${h} ชม. ${m} น.`);
+            $('#print_total_hours_col').text(`${h} ชม. ${m} น.`);
             $('#total_count').text(`${data.length} รายการ`);
             $('#total_budget_display').text(`฿${new Intl.NumberFormat().format(budget)}`);
         }
@@ -691,11 +703,7 @@
         // Filter Controls
         $('#filter').on('click', fetchTrainingData);
 
-        // Update header display when dropdown changes
-        $('#select_term, #select_year').on('change', function () {
-            $('#selected_term_display').text($('#select_term').val() ? 'เทอม ' + $('#select_term').val() : 'ทั้งหมด');
-            $('#selected_year_display').text($('#select_year').val() || 'ทั้งหมด');
-        });
+        // Update header display is handled inside fetchTrainingData when success
 
         $('#reset').on('click', function () {
             $('#select_term').val('');
@@ -1178,6 +1186,22 @@
         }
 
         #record_table tbody td:last-child {
+            display: none !important;
+        }
+
+        #print_tfoot {
+            display: table-footer-group !important;
+        }
+        
+        #print_tfoot th {
+            border: 1px solid black !important;
+            padding: 8px !important;
+            font-size: 14pt !important;
+            color: black !important;
+            vertical-align: middle !important;
+        }
+
+        #print_tfoot th:last-child {
             display: none !important;
         }
 
