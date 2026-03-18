@@ -19,6 +19,10 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
+                <button onclick="exportToExcel()" class="flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-500 text-white rounded-xl hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-all shadow-md group">
+                    <i class="fas fa-file-excel mr-2 group-hover:scale-110 transition-transform"></i>
+                    Export Excel
+                </button>
                 <button onclick="window.printPage()" class="flex items-center px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-xl hover:bg-slate-700 dark:hover:bg-slate-600 transition-all shadow-md group">
                     <i class="fas fa-print mr-2 group-hover:scale-110 transition-transform"></i>
                     พิมพ์รายงาน
@@ -146,6 +150,82 @@ $(document).ready(function() {
     window.printPage = function () {
          $('thead').css('display', 'table-header-group');
         window.print();
+    };
+
+    window.exportToExcel = function() {
+        const monthFilter = $('#select_month').val();
+        if(!monthFilter) return;
+        
+        const monthThai = thaiMonthYear(monthFilter);
+        const fileName = `สรุปการอบรมเดือน_${monthThai}.xlsx`;
+        
+        // Load SheetJS dynamically if not already loaded
+        if (typeof XLSX === 'undefined') {
+            $.getScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js', function() {
+                doExport();
+            });
+        } else {
+            doExport();
+        }
+
+        function doExport() {
+            // Get original table data to avoid HTML formatting in cells
+            const originalData = table.rows().data().toArray();
+            if (originalData.length === 0) {
+                Swal.fire('ไม่มีข้อมูล', 'ไม่มีข้อมูลในตารางที่จะพอร์ต', 'warning');
+                return;
+            }
+
+            // Create headers for Excel
+            const headers = [
+                ["สรุปการอบรม/สัมมนา ประจำเดือน " + monthThai],
+                [""],
+                ["ลำดับ", "ชื่อ-สกุล", "กลุ่มสาระฯ", "เรื่อง", "วัน/เดือน/ปี", "สถานที่", "งบประมาณ"]
+            ];
+
+            // Map data to Excel rows (stripping HTML tags)
+            const rows = originalData.map((row, index) => {
+                // Strip HTML from each column
+                const stripHtml = (html) => {
+                    const tmp = document.createElement("DIV");
+                    tmp.innerHTML = html;
+                    return tmp.textContent || tmp.innerText || "";
+                };
+
+                return [
+                    index + 1,
+                    stripHtml(row[1]),
+                    stripHtml(row[2]),
+                    stripHtml(row[3]),
+                    stripHtml(row[4]).replace(/\n\s+/g, ' '), // Clean up date range
+                    stripHtml(row[5]),
+                    stripHtml(row[6])
+                ];
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(headers.concat(rows));
+
+            // Set column widths
+            const wscols = [
+                {wch: 5},  // ลำดับ
+                {wch: 30}, // ชื่อ-สกุล
+                {wch: 25}, // กลุ่มสาระฯ
+                {wch: 50}, // เรื่อง
+                {wch: 25}, // วัน/เดือน/ปี
+                {wch: 30}, // สถานที่
+                {wch: 15}  // งบประมาณ
+            ];
+            ws['!cols'] = wscols;
+
+            // Merge cells for title
+            ws['!merges'] = [
+                { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, "Monthly Summary");
+            XLSX.writeFile(wb, fileName);
+        }
     };
 
     $('#filter').click(function() {
