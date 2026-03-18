@@ -298,6 +298,24 @@ class Person
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getTrainingByMonthRecords($month)
+    {
+        $query = "SELECT
+                        tid,
+                        topic,
+                        dstart,
+                        dend,
+                        place,
+                        budget
+                  FROM {$this->table_seminar}
+                  WHERE DATE_FORMAT(dstart, '%Y-%m') = :month
+                  ORDER BY tid ASC, dstart ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':month', $month);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getTrainingById($semid)
     {
         $query = "SELECT * FROM {$this->table_seminar} WHERE semid = :semid";

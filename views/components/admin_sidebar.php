@@ -34,6 +34,13 @@ $menuItems = [
         'gradient' => ['from' => 'indigo-500', 'to' => 'purple-600'],
     ],
     [
+        'key' => 'training_monthly',
+        'name' => 'สรุปการอบรมรายเดือน',
+        'url' => 'training_monthly.php',
+        'icon' => 'fa-calendar-check',
+        'gradient' => ['from' => 'teal-500', 'to' => 'emerald-600'],
+    ],
+    [
         'key' => 'leave',
         'name' => 'การลารายบุคคล',
         'url' => 'leave.php',
