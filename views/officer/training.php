@@ -240,7 +240,10 @@
             <div id="viewDetails" class="p-8">
                 <!-- Loaded by AJAX -->
             </div>
-            <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-end">
+            <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-between gap-3">
+                <button id="printSingleBtn" class="px-6 py-2.5 rounded-2xl bg-blue-100 text-blue-700 font-bold hover:bg-blue-200 transition-all">
+                    <i class="fas fa-print mr-2"></i>พิมพ์ฉบับนี้
+                </button>
                 <button onclick="closeViewModal()" class="px-8 py-2.5 rounded-2xl bg-gray-800 text-white font-bold hover:bg-black transition-all">ปิดหน้าต่าง</button>
             </div>
         </div>
@@ -368,9 +371,10 @@ $(document).ready(function() {
                 </div>` : 
                 `<div class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-50 dark:bg-slate-800/50 py-2 rounded-lg no-print">no img</div>`,
                 `<div class="no-print flex gap-2 justify-center">
-                    <button class="w-8 h-8 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all flex items-center justify-center btn-view" data-id="${item.semid}"><i class="fas fa-eye text-xs"></i></button>
-                    <button class="w-8 h-8 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition-all flex items-center justify-center btn-edit" data-id="${item.semid}"><i class="fas fa-edit text-xs"></i></button>
-                    <button class="w-8 h-8 rounded-xl bg-rose-500 text-white hover:bg-rose-600 transition-all flex items-center justify-center btn-del" data-id="${item.semid}"><i class="fas fa-trash text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all flex items-center justify-center btn-view" data-id="${item.semid}" title="ดูรายละเอียด"><i class="fas fa-eye text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 transition-all flex items-center justify-center btn-print" data-id="${item.semid}" title="พิมพ์รายงาน"><i class="fas fa-print text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition-all flex items-center justify-center btn-edit" data-id="${item.semid}" title="แก้ไข"><i class="fas fa-edit text-xs"></i></button>
+                    <button class="w-8 h-8 rounded-xl bg-rose-500 text-white hover:bg-rose-600 transition-all flex items-center justify-center btn-del" data-id="${item.semid}" title="ลบ"><i class="fas fa-trash text-xs"></i></button>
                 </div>`
             ]);
         });
@@ -380,6 +384,10 @@ $(document).ready(function() {
 
     function attachActionEvents() {
         $('.btn-view').on('click', function() { showViewModal($(this).data('id')); });
+        $('.btn-print').on('click', function() {
+            const id = $(this).data('id');
+            window.open(`print_training.php?id=${id}`, '_blank');
+        });
         $('.btn-edit').on('click', function() { showEditModal($(this).data('id')); });
         $('.btn-del').on('click', function() { confirmDelete($(this).data('id')); });
     }
@@ -421,6 +429,7 @@ $(document).ready(function() {
                         </div>
                     `;
                     $('#viewDetails').html(html);
+                    $('#printSingleBtn').off('click').on('click', () => window.open(`print_training.php?id=${id}`, '_blank'));
                     $('#viewModal').removeClass('hidden');
                     $('body').addClass('overflow-hidden');
                 }
