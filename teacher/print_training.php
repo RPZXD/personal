@@ -37,11 +37,13 @@ if (isset($_GET['id'])) {
 
 // Initialize UserLogin class
 $user = new UserLogin($db);
-$userData = $user->userData($teacher_id);
-
 
 if (isset($_SESSION['Teacher_login'])) {
     $userid = $_SESSION['Teacher_login'];
+    // Support both old format (direct ID) and new format (array)
+    if (is_array($userid)) {
+        $userid = $userid['Teach_id'];
+    }
     $userData = $user->userData($userid);
 } else {
     $sw2 = new SweetAlert2(
@@ -56,8 +58,22 @@ if (isset($_SESSION['Teacher_login'])) {
 $teacherData = $user->userData($trainingDetails['tid']);
 
 $position = $person->getPositionById($teacherData['Teach_Position']);
+if (!$position) $position = '';
 $academic = $person->getAcademicById($teacherData['Teach_Academic']);
+if (!$academic) $academic = '';
 $sb = '&nbsp;&nbsp;';
+
+// Dynamic sequence number of the current training for the teacher in that academic year
+$query_count = "SELECT COUNT(*) FROM tb_seminar WHERE tid = :tid AND year = :year AND (dstart < :dstart OR (dstart = :dstart2 AND semid <= :semid))";
+$stmt_count = $dbPerson->prepare($query_count);
+$stmt_count->execute([
+    ':tid' => $trainingDetails['tid'],
+    ':year' => $trainingDetails['year'],
+    ':dstart' => $trainingDetails['dstart'],
+    ':dstart2' => $trainingDetails['dstart'],
+    ':semid' => $trainingDetails['semid']
+]);
+$seminar_count = $stmt_count->fetchColumn();
 
 $mpdf = new \Mpdf\Mpdf([
 	'default_font_size' => 14,
@@ -85,9 +101,9 @@ $html .= '<div style="position:absolute;top:230px;left:80px;width: 650px; height
             <div style="display: flex; justify-content: left; align-items: left;margin-top: 8px;margin-left: 15px;">'
             .'ชื่อ : '. $sb . $teacherData['Teach_name']
             .'<br>ตำแหน่ง : '. $sb . $position . $sb . $sb . 'วิทยฐานะ : ' .$sb . $academic
-            .'<br>กลุ่มสาระ : '. $sb . $teacherData['Teach_major'] = str_replace('คอมพิวเตอร์', 'วิทยาศาสตร์และเทคโนโลยี', $teacherData['Teach_major'])
+            .'<br>กลุ่มสาระ : '. $sb . $teacherData['Teach_major']
             .'<br>ชื่อเรื่องการอบรม/สัมมนา : '. $sb . $trainingDetails['topic']
-            .'<br>วันที่ : '. $sb . Utils::convertToThaiDatePlus($trainingDetails['dstart']).' - '.Utils::convertToThaiDatePlus($trainingDetails['dstart'])
+            .'<br>วันที่ : '. $sb . Utils::convertToThaiDatePlus($trainingDetails['dstart']).' - '.Utils::convertToThaiDatePlus($trainingDetails['dend'])
             .'<br>ภาคเรียนที่ : '. $sb . $trainingDetails['term'].'/'. $trainingDetails['year']
             .'<br>สถานที่จัดอบรม/สัมมนา : '. $sb . $trainingDetails['place']
             .'<br>หน่วยงานที่จัดอบรม/สัมมนา : '. $sb . $trainingDetails['supports']
@@ -103,12 +119,14 @@ $html .= '<div style="position:absolute;top:230px;left:80px;width: 650px; height
             ';
 
 
-$html .= '<div style="position:absolute;top:760px;left:80px;width: 650px; height: 200px; border: 0px solid black;text-align: center;">
-<img src="uploads/file_seminar/'. $trainingDetails['sdoc'] .'" alt="" style="width:auto;height:auto;"></div>';
+if (!empty($trainingDetails['sdoc'])) {
+    $html .= '<div style="position:absolute;top:760px;left:80px;width: 650px; height: 200px; border: 0px solid black;text-align: center;">
+<img src="../uploads/file_seminar/'. $trainingDetails['sdoc'] .'" alt="" style="max-width:350px;max-height:200px;object-fit:contain;"></div>';
+}
 
 $html .= '<div style="position:absolute;top:1000px;left:480px;width: 300px; height: 80px; border: 0px solid black;font-weight: bold;text-align: center;">
             <div style="display: flex; justify-content: left; align-items: left;margin-top: 10px;margin-left: 5px;">'
-            .'ลงชื่อ'. str_repeat(".", 70)  
+            .'ลงชื่อ ..........................................'
             .'<br>('. $teacherData['Teach_name'] .')'
             .'</div>
             </div>
@@ -116,8 +134,7 @@ $html .= '<div style="position:absolute;top:1000px;left:480px;width: 300px; heig
 
 $html .= '<div style="position:absolute;top:1060px;left:50px;width: 600px; height: 50px; border: 0px solid black;font-weight: bold;text-align: left;">
             <div style="display: flex; justify-content: left; align-items: left;margin-top: 10px;margin-left: 5px;">'
-            .'หมายเหตุ การเข้าสัมมนาเชิงปฏิบัติการครั้งนี้เป็นครั้งที่ '. str_repeat(".", 8) . '/' .  str_repeat(".", 15)
-            
+            .'หมายเหตุ การเข้าสัมมนาเชิงปฏิบัติการครั้งนี้เป็นครั้งที่ <u>&nbsp;&nbsp;' . $seminar_count . '&nbsp;&nbsp;</u> / <u>&nbsp;&nbsp;' . $trainingDetails['year'] . '&nbsp;&nbsp;</u>'
             .'</div>
             </div>
             ';
